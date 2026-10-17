@@ -1,0 +1,20 @@
+{
+    "name": "FeelMotion.Editor",
+    "rootNamespace": "FeelMotion.Editor",
+    "references": [
+        "FeelMotion",
+        "LitMotion",
+        "UniTask"
+    ],
+    "includePlatforms": [
+        "Editor"
+    ],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

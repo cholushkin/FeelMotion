@@ -1,0 +1,23 @@
+{
+    "name": "FeelMotion.Physics",
+    "rootNamespace": "FeelMotion",
+    "references": [
+        "FeelMotion",
+        "LitMotion"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.physics",
+            "expression": "",
+            "define": "FEELMOTION_PHYSICS"
+        }
+    ],
+    "noEngineReferences": false
+}

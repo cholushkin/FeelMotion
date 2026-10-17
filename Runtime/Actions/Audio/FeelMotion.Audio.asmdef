@@ -1,0 +1,23 @@
+{
+    "name": "FeelMotion.Audio",
+    "rootNamespace": "FeelMotion",
+    "references": [
+        "FeelMotion",
+        "LitMotion"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.modules.audio",
+            "expression": "",
+            "define": "FEELMOTION_UNITY_AUDIO"
+        }
+    ],
+    "noEngineReferences": false
+}

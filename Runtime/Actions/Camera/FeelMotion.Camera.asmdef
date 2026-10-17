@@ -1,0 +1,17 @@
+{
+    "name": "FeelMotion.Camera",
+    "rootNamespace": "FeelMotion",
+    "references": [
+        "FeelMotion",
+        "LitMotion"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [],
+    "noEngineReferences": false
+}

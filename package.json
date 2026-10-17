@@ -1,0 +1,27 @@
+{
+  "name": "com.cholushkin.feelmotion",
+  "version": "0.1.0",
+  "displayName": "FeelMotion",
+  "description": "Inspector-first animation and game-juice library for Unity: LitMotion's performance with a FEEL-like authoring workflow — tween sequences and side effects (transform, UI, camera, material, audio, physics, TextMeshPro...), built entirely in the Inspector.",
+  "unity": "6000.4",
+  "keywords": [
+    "tween",
+    "animation",
+    "juice",
+    "feel",
+    "litmotion",
+    "inspector"
+  ],
+  "dependencies": {
+    "com.annulusgames.lit-motion": "2.0.2",
+    "com.cysharp.unitask": "2.5.10"
+  },
+  "author": {
+    "name": "Maxim Cholushkin",
+    "email": "cholushkin@gmail.com",
+    "url": "https://sites.google.com/view/cholushkinmaximcard/home"
+  },
+  "documentationUrl": "https://github.com/cholushkin/FeelMotion/blob/main/README.md",
+  "changelogUrl": "https://github.com/cholushkin/FeelMotion/blob/main/CHANGELOG.md",
+  "licensesUrl": "https://github.com/cholushkin/FeelMotion/blob/main/LICENSE"
+}

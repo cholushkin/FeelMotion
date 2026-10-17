@@ -1,0 +1,27 @@
+{
+    "name": "FeelMotion.Samples",
+    "rootNamespace": "FeelMotion.Samples",
+    "references": [
+        "FeelMotion",
+        "FeelMotion.Audio",
+        "FeelMotion.Rendering",
+        "LitMotion",
+        "Unity.InputSystem",
+        "Unity.RenderPipelines.Core.Runtime"
+    ],
+    "includePlatforms": [],
+    "excludePlatforms": [],
+    "allowUnsafeCode": false,
+    "overrideReferences": false,
+    "precompiledReferences": [],
+    "autoReferenced": true,
+    "defineConstraints": [],
+    "versionDefines": [
+        {
+            "name": "com.unity.render-pipelines.core",
+            "expression": "",
+            "define": "FEELMOTION_RENDER_PIPELINES"
+        }
+    ],
+    "noEngineReferences": false
+}
