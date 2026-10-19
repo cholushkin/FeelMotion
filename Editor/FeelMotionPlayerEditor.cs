@@ -22,7 +22,15 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
     SerializedProperty _actionsProperty;
     int _prevArraySize;
 
-    static readonly Color LoopingProgressColor = new(1f, 0.65f, 0f);
+    /// <summary>Orange — used by both the per-action and the common progress bar whenever the thing
+    /// they represent has no final duration (an infinitely-looping action, or a session that contains
+    /// one).</summary>
+    static readonly Color InfiniteProgressColor = new(1f, 0.65f, 0f);
+
+    /// <summary>Blue, matching CaptionDurationColor below — used whenever the represented length is
+    /// predictable/finite (a one-shot or finitely-looping action, or a session with no infinite action).</summary>
+    static readonly Color FiniteProgressColor = new(0.435f, 0.659f, 0.863f);
+
     const string CaptionDurationColor = "#6FA8DC";
 
     AddActionDropdown _dropdown;
@@ -112,6 +120,9 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
     VisualElement CreateSettingsPanel()
     {
         var box = CreateBox("Settings");
+
+        // User-settable name for the whole effect, mirroring each action row's own "Label" field.
+        box.Add(new PropertyField(serializedObject.FindProperty("_label"), "Label"));
 
         var playbackMode = serializedObject.FindProperty("_playbackMode");
         box.Add(new PropertyField(playbackMode));
@@ -242,7 +253,9 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             void RefreshCaptionAndColor()
             {
                 row.Text = ResolveCaption();
-                row.ProgressColor = action.IsLooping ? LoopingProgressColor : Color.white;
+                // Blue for a finite loop count (one-shot or "xN"), orange only for an infinite loop
+                // ("x∞") — matches the "no final duration" coloring on the player's common bar below.
+                row.ProgressColor = action.LoopCount < 0 ? InfiniteProgressColor : FiniteProgressColor;
             }
 
             if (action != null) _liveRows.Add((row, action, ResolveLabel));
@@ -434,6 +447,7 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
         box.Add(stateLabel);
 
         var progressBar = new ProgressBar { lowValue = 0f, highValue = 1f, style = { height = 16f } };
+        var progressFill = progressBar.Q(className: AbstractProgressBar.progressUssClassName);
         box.Add(progressBar);
 
         var buttonRow = new VisualElement { style = { flexDirection = FlexDirection.Row } };
@@ -462,6 +476,16 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             var player = (FeelMotionPlayer)target;
             stateLabel.text = $"State: {player.State}";
             progressBar.value = player.Progress;
+
+            // Orange when at least one enabled action loops infinitely — the session then has no final
+            // duration (Sequential's master handle never completes; Parallel's average never settles),
+            // so the bar's own 0-1 reading stops being a meaningful "time left". Blue otherwise.
+            var hasInfiniteAction = false;
+            foreach (var action in player.Actions)
+            {
+                if (action is { Enabled: true } && action.LoopCount < 0) { hasInfiniteAction = true; break; }
+            }
+            progressFill.style.backgroundColor = hasInfiniteAction ? InfiniteProgressColor : FiniteProgressColor;
 
             var sessionActive = player.State is MotionPlayerState.Playing or MotionPlayerState.Paused;
 

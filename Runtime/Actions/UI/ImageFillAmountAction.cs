@@ -15,6 +15,8 @@ namespace FeelMotion
 
         protected override float Add(in float baseValue, in float delta) => baseValue + delta;
 
+        protected override float Multiply(in float baseValue, in float factor) => baseValue * factor;
+
         protected override float ScaleReach(in float from, in float to, float factor) => from + (to - from) * factor;
     }
 }

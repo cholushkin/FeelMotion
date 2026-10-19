@@ -17,6 +17,9 @@ namespace FeelMotion
 
         protected override Color Add(in Color baseValue, in Color delta) => baseValue + delta;
 
+        protected override Color Multiply(in Color baseValue, in Color factor) => new(
+            baseValue.r * factor.r, baseValue.g * factor.g, baseValue.b * factor.b, baseValue.a * factor.a);
+
         protected override Color ScaleReach(in Color from, in Color to, float factor) => from + (to - from) * factor;
     }
 }

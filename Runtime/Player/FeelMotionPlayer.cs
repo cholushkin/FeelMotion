@@ -20,6 +20,7 @@ namespace FeelMotion
     [AddComponentMenu("FeelMotion/FeelMotion Player")]
     public sealed class FeelMotionPlayer : MonoBehaviour
     {
+        [SerializeField] string _label;
         [SerializeField] MotionPlaybackMode _playbackMode = MotionPlaybackMode.Sequential;
         [SerializeField] MotionAutoPlayMode _autoPlay = MotionAutoPlayMode.None;
         [SerializeField, Min(0f)] float _sequenceDelay;
@@ -38,6 +39,15 @@ namespace FeelMotion
         MotionPlayerSession _session;
 
         public IReadOnlyList<FeelMotionAction> Actions => _actions;
+
+        /// <summary>User-settable name for this whole animation effect — e.g. "Hit Flash", shown in the
+        /// Inspector. Mirrors the per-action label (FeelMotionAction.DisplayName); purely for authoring
+        /// clarity, never read by playback logic.</summary>
+        public string Label
+        {
+            get => _label;
+            set => _label = value;
+        }
 
         /// <summary>Replaces the action list from code — e.g. a procedurally built sequence, or a test.</summary>
         public void SetActions(IReadOnlyList<FeelMotionAction> actions)

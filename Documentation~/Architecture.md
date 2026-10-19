@@ -132,12 +132,23 @@ Editor message.)
 
 ```csharp
 public enum MotionValueMode { Absolute, RelativeToCurrent, FromCurrentTo }
+public enum MotionValueCombineMode { Add, Multiply }
 public enum MotionStopMode { Cancel, CancelAndRestore, Complete, CompleteAndRestore }
 ```
 
 - `Absolute`: tween the authored `From → To` every time, regardless of the target's current value.
-- `RelativeToCurrent`: capture current value at `Play()`, tween `current → current + delta`.
+- `RelativeToCurrent`: capture current value at `Play()`, tween `current → Combine(current, delta)`.
 - `FromCurrentTo`: capture current value at `Play()`, tween `current → To` with no offset math.
+
+`RelativeToCurrent`'s combine step is governed by `PropertyMotionAction.CombineMode`
+(`MotionValueCombineMode`, authored per-action, default `Add`): `Add` is `current + delta` (an offset —
+the long-standing behavior); `Multiply` is `current * delta`, component-wise for vectors/color
+(`Vector3.Scale`-style) — needed for scale-like properties, where `Add` distorts rather than scales
+(e.g. `RelativeToCurrent` scale-by-half on a `TransformScaleAction` wants `current * 0.5`, not
+`current + 0.5`). Every concrete action implements `Multiply(in TValue, in TValue)` the same mechanical
+way it implements `Add`/`ScaleReach` (§8, `ExtensionGuide.md`); for text (`FixedString512Bytes`),
+`Multiply` just returns the authored value, same as its existing no-op `Add`. `FromCurrentTo` never
+combines the initial value with `To`, so `CombineMode` has no effect there.
 
 The runtime always captures the pre-play value (needed for restore regardless of mode).
 `RestoreInitialValues()` is its own method — never implicit inside `Stop()`. `Cancel` leaves the value
@@ -184,7 +195,7 @@ Assets/Libs/FeelMotion/
 │   ├── Core/                          — FeelMotionAction, ActionSettings, IMotionActionRuntime/Runner,
 │   │                                     MotionPlayerSession, state/mode enums
 │   ├── Actions/
-│   │   ├── PropertyMotionActionBases.cs — typed Add/ScaleReach bases (Float/Vector2/3/4/Color/Int/
+│   │   ├── PropertyMotionActionBases.cs — typed Add/Multiply/ScaleReach bases (Float/Vector2/3/4/Color/Int/
 │   │   │                                   Long/Double/Rect), shared by every category below
 │   │   ├── Control/                   — Delay, Event, Play FeelMotion Player  (in FeelMotion.asmdef)
 │   │   ├── Transform/                 — Position/Rotation/Scale + Punch/Shake (in FeelMotion.asmdef)

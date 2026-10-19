@@ -63,6 +63,47 @@ namespace FeelMotion.Tests
         }
 
         [Test]
+        public void RelativeToCurrent_Multiply_ScalesFromCapturedValue()
+        {
+            _go = new GameObject("test");
+            _go.transform.localScale = new Vector3(2f, 2f, 2f);
+
+            var action = new TransformScaleAction().Configure(
+                _go.transform,
+                MotionValueMode.RelativeToCurrent,
+                new SerializableMotionSettings<Vector3, NoOptions> { EndValue = new Vector3(0.5f, 0.5f, 0.5f), Duration = 1f },
+                MotionValueCombineMode.Multiply);
+
+            var runtime = action.CreateRuntime(MotionPlaybackContext.Default);
+            runtime.Play();
+            runtime.Stop(MotionStopMode.Complete);
+
+            AssertVector3(_go.transform.localScale, new Vector3(1f, 1f, 1f),
+                "Multiply combine mode must scale the captured value by EndValue (2 * 0.5 = 1), not add it (which would distort to 2.5).");
+        }
+
+        [Test]
+        public void RelativeToCurrent_DefaultCombineMode_IsAdd()
+        {
+            _go = new GameObject("test");
+            _go.transform.localScale = new Vector3(2f, 2f, 2f);
+
+            var action = new TransformScaleAction().Configure(
+                _go.transform,
+                MotionValueMode.RelativeToCurrent,
+                new SerializableMotionSettings<Vector3, NoOptions> { EndValue = new Vector3(0.5f, 0.5f, 0.5f), Duration = 1f });
+
+            Assert.AreEqual(MotionValueCombineMode.Add, action.CombineMode,
+                "omitting the combine mode from Configure must keep the existing additive behavior.");
+
+            var runtime = action.CreateRuntime(MotionPlaybackContext.Default);
+            runtime.Play();
+            runtime.Stop(MotionStopMode.Complete);
+
+            AssertVector3(_go.transform.localScale, new Vector3(2.5f, 2.5f, 2.5f));
+        }
+
+        [Test]
         public void Absolute_UsesAuthoredStartAndEndRegardlessOfCurrentValue()
         {
             _go = new GameObject("test");
@@ -112,6 +153,17 @@ namespace FeelMotion.Tests
 
             var runtime = action.CreateRuntime(MotionPlaybackContext.Default);
             runtime.Play();
+
+            // Play() alone writes nothing synchronously: PropertyMotionActionRuntime builds its tween
+            // from a SerializableMotionSettings, which goes through LMotion.Create(MotionSettings) —
+            // that overload takes ImmediateBind from the settings (default false), unlike the fluent
+            // builder's own default of true. So without a real engine tick, the value never moves and
+            // Cancel would trivially "not restore" a value that was never written in the first place.
+            // Advancing the handle's own Time (same pattern as GetProgress_*DelayType_* below) forces
+            // one synchronous evaluation, same as a real mid-flight tick would.
+            var handle = runtime.Handle;
+            handle.Time = 0.5d;
+
             // Plain Cancel must NOT restore — that's the whole point of separating the two (problem 4).
             runtime.Stop(MotionStopMode.Cancel);
 

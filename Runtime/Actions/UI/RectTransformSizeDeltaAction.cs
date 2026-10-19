@@ -15,6 +15,8 @@ namespace FeelMotion
 
         protected override Vector2 Add(in Vector2 baseValue, in Vector2 delta) => baseValue + delta;
 
+        protected override Vector2 Multiply(in Vector2 baseValue, in Vector2 factor) => Vector2.Scale(baseValue, factor);
+
         protected override Vector2 ScaleReach(in Vector2 from, in Vector2 to, float factor) => from + (to - from) * factor;
     }
 }

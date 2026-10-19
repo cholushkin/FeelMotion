@@ -18,10 +18,17 @@ namespace FeelMotion
     {
         [SerializeField] TObject _target;
         [SerializeField] MotionValueMode _valueMode = MotionValueMode.Absolute;
+        [SerializeField] MotionValueCombineMode _combineMode = MotionValueCombineMode.Add;
         [SerializeField] SerializableMotionSettings<TValue, TOptions> _settings;
 
         public TObject Target => _target;
         public MotionValueMode ValueMode => _valueMode;
+
+        /// <summary>How RelativeToCurrent combines the captured initial value with the authored
+        /// EndValue — Add (offset) or Multiply (factor, component-wise for vectors/color). Ignored by
+        /// Absolute/FromCurrentTo, which never combine the initial value with EndValue.</summary>
+        public MotionValueCombineMode CombineMode => _combineMode;
+
         public SerializableMotionSettings<TValue, TOptions> Settings => _settings;
 
         public override double GetDuration() => _settings == null
@@ -36,10 +43,12 @@ namespace FeelMotion
         /// <summary>Configures this action from code instead of the Inspector — for runtime-built
         /// sequences and tests. Returns this instance for fluent chaining.</summary>
         public PropertyMotionAction<TObject, TValue, TOptions, TAdapter> Configure(
-            TObject target, MotionValueMode valueMode, SerializableMotionSettings<TValue, TOptions> settings)
+            TObject target, MotionValueMode valueMode, SerializableMotionSettings<TValue, TOptions> settings,
+            MotionValueCombineMode combineMode = MotionValueCombineMode.Add)
         {
             _target = target;
             _valueMode = valueMode;
+            _combineMode = combineMode;
             _settings = settings;
             return this;
         }
@@ -50,8 +59,14 @@ namespace FeelMotion
         /// <summary>Writes a value to the property on the target.</summary>
         protected internal abstract void SetValue(TObject target, in TValue value);
 
-        /// <summary>Combines a captured base value with an authored delta — used by MotionValueMode.RelativeToCurrent.</summary>
+        /// <summary>Combines a captured base value with an authored delta as an offset — used by
+        /// MotionValueMode.RelativeToCurrent when CombineMode is Add.</summary>
         protected internal abstract TValue Add(in TValue baseValue, in TValue delta);
+
+        /// <summary>Combines a captured base value with an authored delta as a factor (component-wise
+        /// for vectors/color) — used by MotionValueMode.RelativeToCurrent when CombineMode is Multiply.
+        /// Needed for scale-like properties, where Add distorts rather than scales.</summary>
+        protected internal abstract TValue Multiply(in TValue baseValue, in TValue factor);
 
         /// <summary>Returns the point reached when traveling from <paramref name="from"/> toward
         /// <paramref name="to"/> scaled by <paramref name="factor"/> — <c>factor == 1</c> returns
@@ -119,7 +134,9 @@ namespace FeelMotion
             {
                 case MotionValueMode.RelativeToCurrent:
                     start = _initialValue;
-                    end = _action.Add(_initialValue, settings.EndValue);
+                    end = _action.CombineMode == MotionValueCombineMode.Multiply
+                        ? _action.Multiply(_initialValue, settings.EndValue)
+                        : _action.Add(_initialValue, settings.EndValue);
                     break;
                 case MotionValueMode.FromCurrentTo:
                     start = _initialValue;
