@@ -22,6 +22,8 @@ namespace FeelMotion
 
         protected internal override Vector3 Add(in Vector3 baseValue, in Vector3 delta) => baseValue + delta;
 
+        protected internal override Vector3 Multiply(in Vector3 baseValue, in Vector3 factor) => Vector3.Scale(baseValue, factor);
+
         protected internal override Vector3 ScaleReach(in Vector3 from, in Vector3 to, float factor) => from + (to - from) * factor;
     }
 }

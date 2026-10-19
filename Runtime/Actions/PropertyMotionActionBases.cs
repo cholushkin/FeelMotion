@@ -16,6 +16,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<float, TOptions>
     {
         protected internal override float Add(in float baseValue, in float delta) => baseValue + delta;
+        protected internal override float Multiply(in float baseValue, in float factor) => baseValue * factor;
         protected internal override float ScaleReach(in float from, in float to, float factor) => from + (to - from) * factor;
     }
 
@@ -26,6 +27,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<double, TOptions>
     {
         protected internal override double Add(in double baseValue, in double delta) => baseValue + delta;
+        protected internal override double Multiply(in double baseValue, in double factor) => baseValue * factor;
         protected internal override double ScaleReach(in double from, in double to, float factor) => from + (to - from) * factor;
     }
 
@@ -36,6 +38,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<int, TOptions>
     {
         protected internal override int Add(in int baseValue, in int delta) => baseValue + delta;
+        protected internal override int Multiply(in int baseValue, in int factor) => baseValue * factor;
         protected internal override int ScaleReach(in int from, in int to, float factor) => from + Mathf.RoundToInt((to - from) * factor);
     }
 
@@ -46,6 +49,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<long, TOptions>
     {
         protected internal override long Add(in long baseValue, in long delta) => baseValue + delta;
+        protected internal override long Multiply(in long baseValue, in long factor) => baseValue * factor;
         protected internal override long ScaleReach(in long from, in long to, float factor) => from + (long)Math.Round((to - from) * factor);
     }
 
@@ -56,6 +60,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<Vector2, TOptions>
     {
         protected internal override Vector2 Add(in Vector2 baseValue, in Vector2 delta) => baseValue + delta;
+        protected internal override Vector2 Multiply(in Vector2 baseValue, in Vector2 factor) => Vector2.Scale(baseValue, factor);
         protected internal override Vector2 ScaleReach(in Vector2 from, in Vector2 to, float factor) => from + (to - from) * factor;
     }
 
@@ -66,6 +71,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<Vector3, TOptions>
     {
         protected internal override Vector3 Add(in Vector3 baseValue, in Vector3 delta) => baseValue + delta;
+        protected internal override Vector3 Multiply(in Vector3 baseValue, in Vector3 factor) => Vector3.Scale(baseValue, factor);
         protected internal override Vector3 ScaleReach(in Vector3 from, in Vector3 to, float factor) => from + (to - from) * factor;
     }
 
@@ -76,6 +82,7 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<Vector4, TOptions>
     {
         protected internal override Vector4 Add(in Vector4 baseValue, in Vector4 delta) => baseValue + delta;
+        protected internal override Vector4 Multiply(in Vector4 baseValue, in Vector4 factor) => Vector4.Scale(baseValue, factor);
         protected internal override Vector4 ScaleReach(in Vector4 from, in Vector4 to, float factor) => from + (to - from) * factor;
     }
 
@@ -86,6 +93,10 @@ namespace FeelMotion
         where TAdapter : unmanaged, IMotionAdapter<Color, TOptions>
     {
         protected internal override Color Add(in Color baseValue, in Color delta) => baseValue + delta;
+
+        protected internal override Color Multiply(in Color baseValue, in Color factor) => new(
+            baseValue.r * factor.r, baseValue.g * factor.g, baseValue.b * factor.b, baseValue.a * factor.a);
+
         protected internal override Color ScaleReach(in Color from, in Color to, float factor) => from + (to - from) * factor;
     }
 
@@ -97,6 +108,9 @@ namespace FeelMotion
     {
         protected internal override Rect Add(in Rect baseValue, in Rect delta)
             => new(baseValue.x + delta.x, baseValue.y + delta.y, baseValue.width + delta.width, baseValue.height + delta.height);
+
+        protected internal override Rect Multiply(in Rect baseValue, in Rect factor)
+            => new(baseValue.x * factor.x, baseValue.y * factor.y, baseValue.width * factor.width, baseValue.height * factor.height);
 
         protected internal override Rect ScaleReach(in Rect from, in Rect to, float factor) => new(
             from.x + (to.x - from.x) * factor,

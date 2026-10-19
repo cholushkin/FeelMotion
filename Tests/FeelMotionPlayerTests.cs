@@ -1,7 +1,9 @@
 using System;
+using System.Text.RegularExpressions;
 using LitMotion;
 using NUnit.Framework;
 using UnityEngine;
+using UnityEngine.TestTools;
 
 namespace FeelMotion.Tests
 {
@@ -67,6 +69,12 @@ namespace FeelMotion.Tests
             var throwing = new ThrowingAction();
             player.SetActions(new FeelMotionAction[] { throwing });
 
+            // FeelMotionPlayer.HandleActionError logs the caught exception (Debug.LogException) as part
+            // of its normal error-isolation path (Architecture.md §7) — an expected, by-design log, not
+            // a real test failure. Without this, Unity Test Framework auto-fails the test on the
+            // unhandled Exception-level log, independently of the assertions below.
+            LogAssert.Expect(LogType.Exception, new Regex("InvalidOperationException"));
+
             player.Play();
 
             Assert.IsTrue(completed,
@@ -88,6 +96,11 @@ namespace FeelMotion.Tests
             var flag = new FlagAction();
 
             player.SetActions(new FeelMotionAction[] { throwing, flag });
+
+            // Same expected error-isolation log as above — the throwing action still logs its exception
+            // even though the session as a whole keeps going.
+            LogAssert.Expect(LogType.Exception, new Regex("InvalidOperationException"));
+
             player.Play();
 
             Assert.IsTrue(flag.WasPlayed,

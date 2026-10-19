@@ -207,6 +207,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b978fcc348bfac84cbc8297da399d1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FeelMotion::FeelMotion.FeelMotionPlayer
+  _label: 
   _playbackMode: 0
   _autoPlay: 1
   _sequenceDelay: 0
@@ -238,6 +239,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 229945621}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {x: 1, y: 1, z: 1}
           endValue: {x: 1.1, y: 1.1, z: 1.1}
@@ -525,6 +527,7 @@ GameObject:
   m_Component:
   - component: {fileID: 772931069}
   - component: {fileID: 772931068}
+  - component: {fileID: 772931070}
   m_Layer: 0
   m_Name: Background
   m_TagString: Untagged
@@ -544,6 +547,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b978fcc348bfac84cbc8297da399d1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FeelMotion::FeelMotion.FeelMotionPlayer
+  _label: Cloud idle anaimation
   _playbackMode: 1
   _autoPlay: 1
   _sequenceDelay: 0
@@ -579,6 +583,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 2100000, guid: 7d35fb3e4bf1ddb45a9e6cc87874d1db, type: 2}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {r: 1, g: 1, b: 1, a: 0.69411767}
           endValue: {r: 1, g: 0.9626475, b: 0.764, a: 0.62352943}
@@ -835,6 +840,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 2100000, guid: 216b65387b0f3574fb9ce90c9e89be84, type: 2}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {r: 1, g: 1, b: 1, a: 1}
           endValue: {r: 1, g: 0.9091662, b: 0.76415086, a: 0.9098039}
@@ -1091,6 +1097,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 2100000, guid: 216b65387b0f3574fb9ce90c9e89be84, type: 2}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {x: 1, y: 1, z: 0, w: 0}
           endValue: {x: 1, y: 1, z: 1, w: 0}
@@ -1140,6 +1147,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 2100000, guid: 7d35fb3e4bf1ddb45a9e6cc87874d1db, type: 2}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {x: 1, y: 1, z: 0, w: 0}
           endValue: {x: 1, y: 1, z: 1, w: 0}
@@ -1189,6 +1197,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 1918648901}
         _valueMode: 1
+        _combineMode: 0
         _settings:
           startValue: {x: 0, y: 0, z: 0}
           endValue: {x: 0, y: 0.05, z: 0}
@@ -1452,6 +1461,194 @@ Transform:
   - {fileID: 1918648901}
   m_Father: {fileID: 0}
   m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
+--- !u!114 &772931070
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 772931067}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: MoreMountains.Tools::MoreMountains.Feedbacks.MMF_Player
+  Feedbacks: []
+  InitializationMode: 2
+  AutoInitialization: 1
+  SafeMode: 3
+  Direction: 0
+  AutoChangeDirectionOnEnd: 0
+  AutoPlayOnStart: 0
+  AutoPlayOnEnable: 0
+  ForceTimescaleMode: 0
+  ForcedTimescaleMode: 1
+  DurationMultiplier: 1
+  TimescaleMultiplier: 1
+  RandomizeDuration: 0
+  RandomDurationMultiplier: {x: 0.5, y: 1.5}
+  DisplayFullDurationDetails: 0
+  PlayerTimescaleMode: 1
+  OnlyPlayIfWithinRange: 0
+  RangeCenter: {fileID: 0}
+  RangeDistance: 5
+  UseRangeFalloff: 0
+  RangeFalloff:
+    serializedVersion: 2
+    m_Curve:
+    - serializedVersion: 3
+      time: 0
+      value: 1
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    - serializedVersion: 3
+      time: 1
+      value: 0
+      inSlope: 0
+      outSlope: 0
+      tangentMode: 0
+      weightedMode: 0
+      inWeight: 0
+      outWeight: 0
+    m_PreInfinity: 2
+    m_PostInfinity: 2
+    m_RotationOrder: 4
+  RemapRangeFalloff: {x: 0, y: 1}
+  IgnoreRangeEvents: 0
+  CooldownDuration: 0
+  InitialDelay: 0
+  CanPlay: 1
+  CanPlayWhileAlreadyPlaying: 1
+  ChanceToPlay: 100
+  FeedbacksIntensity: 1
+  Events:
+    TriggerMMFeedbacksEvents: 0
+    TriggerUnityEvents: 1
+    OnPlay:
+      m_PersistentCalls:
+        m_Calls: []
+    OnPause:
+      m_PersistentCalls:
+        m_Calls: []
+    OnStop:
+      m_PersistentCalls:
+        m_Calls: []
+    OnResume:
+      m_PersistentCalls:
+        m_Calls: []
+    OnChangeDirection:
+      m_PersistentCalls:
+        m_Calls: []
+    OnComplete:
+      m_PersistentCalls:
+        m_Calls: []
+    OnRestoreInitialValues:
+      m_PersistentCalls:
+        m_Calls: []
+    OnSkipToTheEnd:
+      m_PersistentCalls:
+        m_Calls: []
+    OnInitializationComplete:
+      m_PersistentCalls:
+        m_Calls: []
+    OnEnable:
+      m_PersistentCalls:
+        m_Calls: []
+    OnDisable:
+      m_PersistentCalls:
+        m_Calls: []
+  DebugActive: 0
+  InScriptDrivenPause: 0
+  FeedbacksList:
+  - rid: 1365089206222979072
+  KeepPlayModeChanges: 0
+  PerformanceMode: 0
+  RestoreInitialValuesOnDisable: 0
+  StopFeedbacksOnDisable: 0
+  PlayCount: 0
+  references:
+    version: 2
+    RefIds:
+    - rid: 1365089206222979072
+      type: {class: MMF_Collider, ns: MoreMountains.Feedbacks, asm: MoreMountains.Tools}
+      data:
+        Active: 1
+        UniqueID: 1578110555
+        Label: Collider
+        OriginalLabel: Collider
+        ChannelMode: 0
+        Channel: 0
+        MMChannelDefinition: {fileID: 0}
+        Chance: 100
+        Timing:
+          TimescaleMode: 0
+          ExcludeFromHoldingPauses: 0
+          ContributeToTotalDuration: 1
+          InitialDelay: 0
+          CooldownDuration: 0
+          InterruptsOnStop: 1
+          NumberOfRepeats: 0
+          RepeatForever: 0
+          DelayBetweenRepeats: 1
+          PlayCount: 0
+          LimitPlayCount: 0
+          MaxPlayCount: 3
+          SetPlayCountToZeroOnReset: 0
+          MMFeedbacksDirectionCondition: 0
+          PlayDirection: 0
+          ConstantIntensity: 0
+          UseIntensityInterval: 0
+          IntensityIntervalMin: 0
+          IntensityIntervalMax: 0
+          Sequence: {fileID: 0}
+          TrackID: 0
+          Quantized: 0
+          TargetBPM: 120
+        AutomatedTargetAcquisition:
+          Mode: 0
+          ChildIndex: 0
+        RandomizeOutput: 0
+        RandomMultiplier: {x: 0.8, y: 1}
+        RandomizeDuration: 0
+        RandomDurationMultiplier: {x: 0.5, y: 2}
+        UseRange: 0
+        RangeDistance: 5
+        UseRangeFalloff: 0
+        RangeFalloff:
+          serializedVersion: 2
+          m_Curve:
+          - serializedVersion: 3
+            time: 0
+            value: 1
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          - serializedVersion: 3
+            time: 1
+            value: 0
+            inSlope: 0
+            outSlope: 0
+            tangentMode: 0
+            weightedMode: 0
+            inWeight: 0
+            outWeight: 0
+          m_PreInfinity: 2
+          m_PostInfinity: 2
+          m_RotationOrder: 4
+        RemapRangeFalloff: {x: 0, y: 1}
+        AutomaticShakerSetupButton:
+          ButtonText: 
+        Owner: {fileID: 772931070}
+        DebugActive: 0
+        TargetCollider: {fileID: 0}
+        Mode: 1
 --- !u!1 &1029750844
 GameObject:
   m_ObjectHideFlags: 0
@@ -1496,6 +1693,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: b978fcc348bfac84cbc8297da399d1b5, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FeelMotion::FeelMotion.FeelMotionPlayer
+  _label: 
   _playbackMode: 1
   _autoPlay: 2
   _sequenceDelay: 0
@@ -1528,6 +1726,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 1720066185}
         _valueMode: 0
+        _combineMode: 0
         _settings:
           startValue: {x: 0, y: 0, z: -1}
           endValue: {x: 0, y: 0, z: 1}
@@ -1577,6 +1776,7 @@ MonoBehaviour:
           _timescaleMode: 0
         _target: {fileID: 1720066185}
         _valueMode: 1
+        _combineMode: 0
         _settings:
           startValue: {x: 0, y: 0.1, z: 0}
           endValue: {x: 0, y: -0.1, z: 0}

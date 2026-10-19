@@ -9,7 +9,7 @@ shipped API (see [Architecture.md](Architecture.md)), not a speculative sketch.
 ### 1a. A property tween — the common case
 
 Most custom actions animate one property on one object type: subclass
-`PropertyMotionAction<TObject, TValue, TOptions, TAdapter>` and implement four methods. You get
+`PropertyMotionAction<TObject, TValue, TOptions, TAdapter>` and implement five methods. You get
 `MotionValueMode`, restore-independent-of-stop, target validation, `ActionSettings` (start delay,
 timescale), the global duration/intensity multipliers, and sequencing for free:
 
@@ -24,14 +24,21 @@ using UnityEngine;
 [FeelMotionActionMenu("MyGame/Shake Camera FOV")]
 public sealed class CameraFovShakeAction : PropertyMotionAction<Camera, float, ShakeOptions, FloatShakeMotionAdapter>
 {
-    // In your own assembly, override with just `protected` — `GetValue`/`SetValue`/`Add`/`ScaleReach`
-    // are declared `protected internal` on PropertyMotionAction, but C# requires a cross-assembly
-    // override to drop the `internal` part (it only applies within PropertyMotionAction's own
-    // assembly). FeelMotion's own built-in actions keep `protected internal override` only because
+    // In your own assembly, override with just `protected` — `GetValue`/`SetValue`/`Add`/`Multiply`/
+    // `ScaleReach` are declared `protected internal` on PropertyMotionAction, but C# requires a
+    // cross-assembly override to drop the `internal` part (it only applies within PropertyMotionAction's
+    // own assembly). FeelMotion's own built-in actions keep `protected internal override` only because
     // they happen to live in the same assembly as PropertyMotionAction itself.
     protected override float GetValue(Camera target) => target.fieldOfView;
     protected override void SetValue(Camera target, in float value) => target.fieldOfView = value;
+
+    // Backs MotionValueMode.RelativeToCurrent when CombineMode is Add (the default) — current + delta.
     protected override float Add(in float baseValue, in float delta) => baseValue + delta;
+
+    // Backs RelativeToCurrent when CombineMode is Multiply — current * delta. Mostly relevant for
+    // scale-like properties, where Add would distort rather than scale; for a plain FOV shake this is
+    // just the arithmetically-consistent counterpart, same mechanical shape as Add.
+    protected override float Multiply(in float baseValue, in float factor) => baseValue * factor;
 
     // Backs the player's global IntensityMultiplier (Architecture.md §8) — same mechanical shape as
     // Add: `from + (to - from) * factor`. factor == 1 means "unchanged", 0 means "no motion".
