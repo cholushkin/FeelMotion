@@ -101,10 +101,11 @@ namespace FeelMotion
         }
 
         public MotionActionState State { get; private set; } = MotionActionState.Idle;
-        public MotionHandle Handle => _handle;
+        public MotionHandle Handle => _managedLoop?.Handle ?? _handle;
         public event Action Completed;
 
         MotionHandle _handle;
+        ManagedLoopPlayer _managedLoop;
 
         public bool ValidateTarget()
         {
@@ -155,25 +156,73 @@ namespace FeelMotion
 
             State = MotionActionState.Playing;
 
-            var motionSettings = settings with { StartValue = start, EndValue = end };
+            var baseSettings = settings with { StartValue = start, EndValue = end };
             var durationMultiplier = _context.DurationMultiplier;
-            if (durationMultiplier != 1f)
-                motionSettings = motionSettings with
-                {
-                    Duration = motionSettings.Duration * durationMultiplier,
-                    Delay = motionSettings.Delay * durationMultiplier
-                };
-
             var actionSettings = _action.ActionSettings;
+            var randomization = RandomizationSet.CreateOrNull(_action.Randomizers);
+
+            // A module sampling EveryLoop can't reuse one baked LitMotion handle across repeats — see
+            // Documentation/Architecture.md's Randomization section. This action's own LoopCount==1
+            // check is folded into RequiresManagedLoop, so a non-looping randomized action still takes
+            // the plain path below.
+            if (_action.RequiresManagedLoop)
+            {
+                _managedLoop = new ManagedLoopPlayer(
+                    isFirstIteration => BuildIterationHandle(baseSettings, actionSettings, durationMultiplier, isFirstIteration, randomization),
+                    _action.LoopCount,
+                    OnManagedLoopComplete);
+                _managedLoop.Play();
+                return;
+            }
+
+            var motionSettings = durationMultiplier != 1f
+                ? baseSettings with { Duration = baseSettings.Duration * durationMultiplier, Delay = baseSettings.Delay * durationMultiplier }
+                : baseSettings;
 
             if (actionSettings.StartDelay > 0f)
                 motionSettings = motionSettings with { Delay = motionSettings.Delay + actionSettings.StartDelay * durationMultiplier };
             if (actionSettings.TimescaleMode != MotionTimescaleMode.Scaled)
                 motionSettings = motionSettings with { Scheduler = actionSettings.ResolveScheduler() };
 
+            // Zero-overhead when unused: randomization is null whenever the action has no enabled
+            // modules, and everything above this point is unchanged from before randomization existed.
+            if (randomization != null)
+            {
+                motionSettings = motionSettings with
+                {
+                    StartValue = randomization.ApplyValue(RandomizedParameter.StartValue, motionSettings.StartValue),
+                    EndValue = randomization.ApplyValue(RandomizedParameter.EndValue, motionSettings.EndValue),
+                    Duration = Mathf.Max(0.0001f, randomization.ApplyScalar(RandomizedParameter.Duration, motionSettings.Duration)),
+                    Delay = Mathf.Max(0f, randomization.ApplyScalar(RandomizedParameter.Delay, motionSettings.Delay))
+                };
+            }
+
             _handle = LMotion.Create<TValue, TOptions, TAdapter>(motionSettings)
                 .WithOnComplete(OnLitMotionComplete)
                 .Bind(this, static (x, state) => state.ApplyValue(x));
+        }
+
+        /// <summary>Builds and binds exactly one single-loop handle for ManagedLoopPlayer — used only
+        /// when _action.RequiresManagedLoop. isFirstIteration mirrors ManagedLoopPlayer's own contract:
+        /// true only for the very first pass, so ActionSettings.StartDelay and a FirstLoop delay are
+        /// paid once, not every iteration.</summary>
+        MotionHandle BuildIterationHandle(
+            SerializableMotionSettings<TValue, TOptions> baseSettings,
+            ActionSettings actionSettings,
+            float durationMultiplier,
+            bool isFirstIteration,
+            RandomizationSet randomization)
+        {
+            var resolved = MotionSettingsResolver.Resolve(baseSettings, actionSettings, durationMultiplier, isFirstIteration, loops: 1, randomization);
+            return LMotion.Create<TValue, TOptions, TAdapter>(resolved)
+                .WithOnComplete(_managedLoop.OnIterationComplete)
+                .Bind(this, static (x, state) => state.ApplyValue(x));
+        }
+
+        void OnManagedLoopComplete()
+        {
+            State = MotionActionState.Completed;
+            Completed?.Invoke();
         }
 
         void ApplyValue(TValue value)
@@ -191,19 +240,25 @@ namespace FeelMotion
 
         public void Pause()
         {
-            if (_handle.IsActive()) _handle.PlaybackSpeed = 0f;
+            if (_managedLoop != null) _managedLoop.Pause();
+            else if (_handle.IsActive()) _handle.PlaybackSpeed = 0f;
             State = MotionActionState.Paused;
         }
 
         public void Resume()
         {
-            if (_handle.IsActive()) _handle.PlaybackSpeed = 1f;
+            if (_managedLoop != null) _managedLoop.Resume();
+            else if (_handle.IsActive()) _handle.PlaybackSpeed = 1f;
             State = MotionActionState.Playing;
         }
 
         public void Stop(MotionStopMode mode)
         {
-            if (mode is MotionStopMode.Cancel or MotionStopMode.CancelAndRestore)
+            var complete = mode is MotionStopMode.Complete or MotionStopMode.CompleteAndRestore;
+
+            if (_managedLoop != null)
+                _managedLoop.Stop(complete);
+            else if (!complete)
                 _handle.TryCancel();
             else
                 _handle.TryComplete();

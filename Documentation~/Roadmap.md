@@ -56,6 +56,14 @@ What's actually implemented vs. what's left. For how the implemented part works,
   `FeelMotion.UI`): value-mode math, restore-independent-of-stop, target validation,
   `ActionSettings`/scheduler mapping, zero/invalid-action completion, Play/Pause/Rewind state
   transitions, duration/intensity multiplier math.
+- **Randomization** (Architecture.md §12): opt-in `FeelMotionRandomizer` modules per action, targeting
+  Start/End Value (any codec-supported `TValue` — float/int/long/double/Vector2/3/4/Color/Rect),
+  Duration, or Delay; `AbsoluteRange`/`Offset`/`Multiplier` modes with per-component enable+range;
+  pluggable `IRandomDistribution` (`UniformDistribution` built in); optional per-module deterministic
+  seed; `OncePerPlay`/`EveryLoop` sampling, the latter via FeelMotion-managed loop iteration
+  (`ManagedLoopPlayer`) since a native multi-loop LitMotion handle can't re-randomize mid-flight.
+  Inspector: a "Randomization" foldout + "Add Randomizer..." per action
+  (`Editor/RandomizationSectionView.cs`). Tests in `Tests/RandomizationTests.cs`.
 
 ## Not yet done
 
@@ -80,3 +88,10 @@ What's actually implemented vs. what's left. For how the implemented part works,
   converter for existing `LitMotionAnimation` component data on scenes/prefabs — not built because
   nothing in `Assets/Game` uses `LitMotionAnimation` today; would matter if a future removal of that
   package needs to carry over authored data instead of re-authoring by hand.
+- **Ease randomization**: Start/End Value, Duration, and Delay are randomizable today; `Ease` is
+  discrete rather than numeric, so it doesn't fit `AbsoluteRange`/`Offset`/`Multiplier` cleanly. A
+  pick-from-a-selected-set module (uniform now, weighted later) is the natural extension — not built
+  yet (Architecture.md §12).
+- **Additional random distributions**: `IRandomDistribution` is designed to be extended (Gaussian,
+  curve-driven, ...) without touching `FeelMotionRandomizer` or the runtime apply path — `Uniform` is
+  the only one shipped so far.

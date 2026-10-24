@@ -177,6 +177,18 @@ namespace FeelMotion
                     continue;
                 }
 
+                // A FeelMotion-managed loop (an enabled EveryLoop randomizer on a looping action) builds
+                // its handles lazily, one per iteration, as each previous one completes — there's no
+                // single handle to Append() at build time the way a plain multi-loop tween has. Same
+                // isolation treatment as the infinite-loop case above.
+                if (entry.Action.RequiresManagedLoop)
+                {
+                    _onActionError?.Invoke(entry.Action, new InvalidOperationException(
+                        $"{entry.Action.DisplayName}: per-loop (EveryLoop) randomization can't be used in Sequential playback mode (each loop's handle is created only as the previous one completes, so it can't be folded into a sequence ahead of time). Switch this action's randomizer to Once Per Play, or switch this action to Parallel mode."));
+                    processedCount++;
+                    continue;
+                }
+
                 try
                 {
                     entry.Runtime.Play();

@@ -224,6 +224,8 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             var displayNameProperty = elementProperty.FindPropertyRelative("_displayName");
             var enabledProperty = elementProperty.FindPropertyRelative("_enabled");
             var actionSettingsProperty = elementProperty.FindPropertyRelative("_actionSettings");
+            var randomizersProperty = elementProperty.FindPropertyRelative("_randomizers");
+            var settingsProperty = elementProperty.FindPropertyRelative("_settings");
             var targetProperty = elementProperty.FindPropertyRelative("_target");
             var action = elementProperty.managedReferenceValue as FeelMotionAction;
             var actionType = action.GetType();
@@ -287,7 +289,7 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             {
                 if (SerializedProperty.EqualContents(elementProperty, endProperty)) break;
                 isFirst = false;
-                if (elementProperty.name is "_enabled" or "_displayName" or "_actionSettings") continue;
+                if (elementProperty.name is "_enabled" or "_displayName" or "_actionSettings" or "_randomizers") continue;
 
                 // "_settings" is PropertyMotionAction's/ValueMotionAction's own LitMotion
                 // SerializableMotionSettings field — render it ourselves (MotionSettingsView) instead
@@ -297,6 +299,14 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
                     ? MotionSettingsView.Build(elementProperty.Copy(), "Motion")
                     : new PropertyField(elementProperty, elementProperty.displayName));
             }
+
+            // Only a PropertyMotionAction/ValueMotionAction (both carry _settings) actually resolves
+            // Randomizers at runtime (Documentation/Architecture.md §12) — a Control action (Delay,
+            // Event, Play FeelMotion Player) technically has the serialized list too (it's on the
+            // FeelMotionAction base), but showing "Add Randomizer..." there would be a silent no-op, so
+            // the section only renders where it would actually do something.
+            if (randomizersProperty != null && settingsProperty != null)
+                row.Add(RandomizationSectionView.Build(randomizersProperty, RandomizationSectionView.GetValueType(actionType)));
 
             row.PreviewButton.AddManipulator(new Clickable(() => TogglePreview(row, _actionsProperty.GetArrayElementAtIndex(index))));
         }

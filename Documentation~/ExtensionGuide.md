@@ -224,6 +224,27 @@ from a different base, `ValueMotionAction<TValue,TOptions,TAdapter>`, instead of
    LitMotion (see the §1b example). `context.IntensityMultiplier` only matters if your action has a
    value to scale — a pure side-effect action (a callback, an audio one-shot) can ignore it, like
    `EventAction` does.
+8. **Apply `FeelMotionAction.Randomizers` yourself if you're not going through `PropertyMotionAction`/
+   `ValueMotionAction`.** Those two bases resolve it for you (Architecture.md §12); a hand-rolled
+   runtime that wants the Randomization section to actually do something builds a
+   `RandomizationSet.CreateOrNull(_action.Randomizers)` and calls `ApplyValue`/`ApplyScalar` on its own
+   resolved values before handing them to LitMotion — same opt-in shape as rules 5 and 7 above. Skip
+   this entirely if your action has nothing worth randomizing; the Randomization foldout still shows up
+   (every `FeelMotionAction` has one) but "Add Randomizer..." will just have nothing to do.
+
+## 4a. Adding a random distribution
+
+`IRandomDistribution` (`Runtime/Core/Randomization/IRandomDistribution.cs`) is the one extension point
+Architecture.md §12 calls out: implement `float Sample(float min, float max, ref RandomState state)` in
+a new `[Serializable]` class (see `UniformDistribution` for the whole shape), and it's immediately
+pickable on every `FeelMotionRandomizer`'s Distribution field via Unity's built-in
+`[SerializeReference]` type picker — no change to `FeelMotionRandomizer`, `RandomizationSet`, or any
+runtime apply path. `ValueComponentCodec<TValue>` (same folder) is the other half of the Randomization
+system — the per-value-type bridge that keeps `FeelMotionRandomizer` itself non-generic; it covers
+float/int/long/double/Vector2/Vector3/Vector4/Color/Rect today. Adding support for a new `TValue` means
+adding one more `IValueComponentCodec<TValue>` branch there (and to its non-generic companion,
+`ValueComponentCodec.GetComponentLabels`, so the Inspector can label the new type's component rows) —
+every action that already uses that `TValue` picks it up automatically, no per-action change needed.
 
 ## 5. What you get for free by following this contract
 

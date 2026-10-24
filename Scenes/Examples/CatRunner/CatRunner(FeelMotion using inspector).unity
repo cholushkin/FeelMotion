@@ -256,6 +256,159 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38602125}
   m_CullTransparentMesh: 1
+--- !u!1 &128346298
+GameObject:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  serializedVersion: 6
+  m_Component:
+  - component: {fileID: 128346300}
+  - component: {fileID: 128346299}
+  m_Layer: 0
+  m_Name: GameObject
+  m_TagString: Untagged
+  m_Icon: {fileID: 0}
+  m_NavMeshLayer: 0
+  m_StaticEditorFlags: 0
+  m_IsActive: 1
+--- !u!114 &128346299
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128346298}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: b978fcc348bfac84cbc8297da399d1b5, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FeelMotion::FeelMotion.FeelMotionPlayer
+  _label: 
+  _playbackMode: 1
+  _autoPlay: 0
+  _sequenceDelay: 0
+  _stopOnDisable: 1
+  _restoreOnDisable: 0
+  _durationMultiplier: 1
+  _intensityMultiplier: 1
+  _actions:
+  - rid: 1365089327742451795
+  _onPlay:
+    m_PersistentCalls:
+      m_Calls: []
+  _onComplete:
+    m_PersistentCalls:
+      m_Calls: []
+  _onStop:
+    m_PersistentCalls:
+      m_Calls: []
+  references:
+    version: 2
+    RefIds:
+    - rid: 1365089327742451795
+      type: {class: TransformPositionAction, ns: FeelMotion, asm: FeelMotion}
+      data:
+        _displayName: rnd transform
+        _enabled: 1
+        _actionSettings:
+          _startDelay: 0
+          _timescaleMode: 0
+        _randomizers:
+        - _enabled: 1
+          _parameter: 2
+          _mode: 1
+          _policy: 0
+          _useSeed: 0
+          _seed: 0
+          _distribution:
+            rid: 1365089327742451800
+          _components:
+          - Enabled: 1
+            Min: -1
+            Max: 1
+        - _enabled: 1
+          _parameter: 1
+          _mode: 1
+          _policy: 0
+          _useSeed: 0
+          _seed: 0
+          _distribution:
+            rid: 1365089327742451801
+          _components:
+          - Enabled: 1
+            Min: -1
+            Max: 1
+          - Enabled: 1
+            Min: -1
+            Max: 1
+          - Enabled: 1
+            Min: -1
+            Max: 1
+        _target: {fileID: 128346300}
+        _valueMode: 0
+        _combineMode: 0
+        _settings:
+          startValue: {x: 0, y: 0, z: 0}
+          endValue: {x: 1, y: 1, z: 1}
+          duration: 1
+          ease: 0
+          customEaseCurve:
+            serializedVersion: 2
+            m_Curve:
+            - serializedVersion: 3
+              time: 0
+              value: 0
+              inSlope: 0
+              outSlope: 1
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            - serializedVersion: 3
+              time: 1
+              value: 1
+              inSlope: 1
+              outSlope: 0
+              tangentMode: 0
+              weightedMode: 0
+              inWeight: 0
+              outWeight: 0
+            m_PreInfinity: 2
+            m_PostInfinity: 2
+            m_RotationOrder: 4
+          delay: 0
+          delayType: 0
+          loops: 10
+          loopType: 0
+          cancelOnError: 0
+          skipValuesDuringDelay: 0
+          immediateBind: 0
+          schedulerType: 0
+          additionalSettings: 0
+        _useWorldSpace: 0
+    - rid: 1365089327742451800
+      type: {class: UniformDistribution, ns: FeelMotion, asm: FeelMotion}
+      data: 
+    - rid: 1365089327742451801
+      type: {class: UniformDistribution, ns: FeelMotion, asm: FeelMotion}
+      data: 
+--- !u!4 &128346300
+Transform:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 128346298}
+  serializedVersion: 2
+  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
+  m_LocalPosition: {x: -0.36524, y: -0.10036, z: 0.375}
+  m_LocalScale: {x: 1, y: 1, z: 1}
+  m_ConstrainProportionsScale: 0
+  m_Children: []
+  m_Father: {fileID: 0}
+  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &162251333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -472,6 +625,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 229945621}
         _valueMode: 0
         _combineMode: 0
@@ -1557,6 +1711,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 2100000, guid: 7d35fb3e4bf1ddb45a9e6cc87874d1db, type: 2}
         _valueMode: 0
         _combineMode: 0
@@ -1814,6 +1969,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 2100000, guid: 216b65387b0f3574fb9ce90c9e89be84, type: 2}
         _valueMode: 0
         _combineMode: 0
@@ -2071,6 +2227,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 2100000, guid: 216b65387b0f3574fb9ce90c9e89be84, type: 2}
         _valueMode: 0
         _combineMode: 0
@@ -2121,6 +2278,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 2100000, guid: 7d35fb3e4bf1ddb45a9e6cc87874d1db, type: 2}
         _valueMode: 0
         _combineMode: 0
@@ -2171,6 +2329,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 1918648901}
         _valueMode: 1
         _combineMode: 0
@@ -2428,6 +2587,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 1955528013}
         _valueMode: 1
         _combineMode: 1
@@ -2684,6 +2844,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 1955528013}
         _valueMode: 1
         _combineMode: 0
@@ -2957,7 +3118,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 772931067}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 6da43522623d4704e979466dc7650b65, type: 3}
   m_Name: 
@@ -3213,6 +3374,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 1720066185}
         _valueMode: 0
         _combineMode: 0
@@ -3263,6 +3425,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
+        _randomizers: []
         _target: {fileID: 1720066185}
         _valueMode: 1
         _combineMode: 0
@@ -10202,3 +10365,4 @@ SceneRoots:
   - {fileID: 1885308221}
   - {fileID: 772931069}
   - {fileID: 607968216}
+  - {fileID: 128346300}

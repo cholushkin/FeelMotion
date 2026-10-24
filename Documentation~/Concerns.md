@@ -73,6 +73,42 @@ the UIElements inspector itself (foldout/checkbox hit-testing, the Add Action dr
 preview). That verification is manual, in-Editor, every time `Editor/FeelMotionPlayerEditor.cs` or
 `Editor/ActionRowView.cs` changes.
 
+## Randomization adds its own small per-Play()/per-managed-loop-iteration allocations
+
+Same trade-off as "Is FeelMotion zero-allocation?" above, extended by Architecture.md §12's
+Randomization system — and only paid by an action that actually has enabled randomizer modules:
+
+- `RandomizationSet.CreateOrNull` allocates the set and one small wrapper object per enabled module,
+  once per `Play()` — an action with no randomizers (the default) gets `null` back and pays nothing.
+- Each module's sampled components (≤4 floats) are a small heap array, cached for `OncePerPlay` (one
+  allocation for the whole `Play()`) or re-allocated every iteration for `EveryLoop` — the latter is a
+  real per-loop-iteration allocation, not just per-`Play()`. Still well below a per-frame hot path (an
+  iteration is one full tween loop, not one `Update()` tick), but worth knowing if a managed-loop action
+  loops at a very high rate.
+- `ManagedLoopPlayer` itself (one object) and each iteration's `MotionHandle` are allocated the same way
+  a plain `PropertyMotionActionRuntime` already allocates per `Play()` — no new class of allocation, just
+  more of them spread across iterations instead of one upfront.
+
+## Managed-loop iteration doesn't preserve LitMotion's own LoopType across loops
+
+`ManagedLoopPlayer` builds each iteration as an independent `Loops = 1` handle (Architecture.md §12) —
+LitMotion's own `LoopType` (`Restart`/`Yoyo`/`Incremental`) only has meaning *within* a single native
+multi-loop handle, describing how consecutive loops relate to each other and to the first. A
+managed-loop action effectively always restarts (`LoopType.Restart` behavior) regardless of its
+authored `LoopType` — `Yoyo` (ping-pong) and `Incremental` (each loop's end becomes the next loop's
+start) are not reproduced across managed iterations. Only reachable when a looping action also has an
+enabled `EveryLoop` randomizer; a plain looping action with no randomizers, or only `OncePerPlay` ones,
+still goes through the native-`Loops` single-handle path and keeps its authored `LoopType` exactly as
+before.
+
+## Managed-loop (EveryLoop) randomization can't be used in Sequential playback mode
+
+Same structural reason an infinitely-looping native tween can't be folded into a Sequential `LSequence`
+(above, and `MotionPlayerSession.PlaySequential`'s existing check): each managed-loop iteration's
+handle is created only as the previous one completes, so there's nothing to `Append()` into the
+sequence ahead of time. `MotionPlayerSession` rejects the combination through the same per-action error
+isolation, rather than letting it silently misbehave or throw uncaught.
+
 ## `FeelMotion.UI`'s asmdef split doesn't guarantee stripping on its own
 
 Splitting UI actions into their own assembly (`Architecture.md` §9) means a project that references

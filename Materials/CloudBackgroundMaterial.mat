@@ -46,7 +46,7 @@ Material:
     - _BaseMap:
         m_Texture: {fileID: 2800000, guid: f8c044c5a938a1b4f9a098574373cb4a, type: 3}
         m_Scale: {x: 1, y: 1}
-        m_Offset: {x: 0.48165643, y: 0}
+        m_Offset: {x: 0.38251215, y: 0}
     - _BumpMap:
         m_Texture: {fileID: 0}
         m_Scale: {x: 1, y: 1}
@@ -134,7 +134,7 @@ Material:
     - _XRMotionVectorsPass: 1
     - _ZWrite: 0
     m_Colors:
-    - _BaseColor: {r: 1, g: 0.96159756, b: 0.7590899, a: 0.5370576}
+    - _BaseColor: {r: 1, g: 0.9626372, b: 0.76395184, a: 0.50618833}
     - _Color: {r: 1, g: 0.9615975, b: 0.7590899, a: 0.5370576}
     - _EmissionColor: {r: 0, g: 0, b: 0, a: 1}
     - _SpecColor: {r: 0.19999996, g: 0.19999996, b: 0.19999996, a: 1}

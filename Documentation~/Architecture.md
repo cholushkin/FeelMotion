@@ -301,3 +301,69 @@ Plain C# events + `UnityEvent`s on `FeelMotionPlayer` (`Played`/`Paused`/`Resume
 thin external adapter (subscribe `Completed`, publish a command), not something baked into the core
 package, matching this project's convention that `R3` is for `rMVVM`/UI state and `VitalRouter` is for
 discrete gameplay events (`CLAUDE.md` §3).
+
+## 12. Randomization
+
+Every `FeelMotionAction` carries `[SerializeField] List<FeelMotionRandomizer> _randomizers`
+(`Runtime/Core/FeelMotionAction.cs`) — opt-in, independent modules, empty by default. Each module
+(`Runtime/Core/Randomization/FeelMotionRandomizer.cs`) targets exactly one `RandomizedParameter`
+(`StartValue`/`EndValue`/`Duration`/`Delay`) and perturbs it by one `RandomizationMode`
+(`AbsoluteRange`/`Offset`/`Multiplier`) per enabled `ComponentRange`. Modules are applied to the
+*resolved* runtime settings — after `MotionValueMode` combination, the global intensity/duration
+multipliers, and `ActionSettings` — never to the serialized authored `SerializableMotionSettings`
+itself. Only `PropertyMotionAction`/`ValueMotionAction` (both carry a `SerializableMotionSettings`)
+actually resolve these; a hand-written `FeelMotionAction` (ExtensionGuide.md §1b) can still hold
+modules, it just has to apply them itself, the same way it already applies `ActionSettings`/
+`MotionPlaybackContext` itself.
+
+**One module, any value type** — `ValueComponentCodec<TValue>` (`Runtime/Core/Randomization/
+ValueComponentCodec.cs`) decomposes any supported `TValue` into ≤4 float components and recomposes it
+(int/long rounded), so `FeelMotionRandomizer` itself stays completely non-generic and value-type-
+agnostic — no per-type randomizer subclass, no duplicated math across the ~40 concrete action types.
+Supported: float/int/long/double (1 component), Vector2 (2), Vector3 (3), Vector4/Color/Rect (4).
+`FixedString*`-valued actions (TMP/UI Text, StringValue) have no codec — `Instance` is `null` for them,
+so Start/End Value randomization is unavailable, but Duration/Delay (always `float`) still work. A
+disabled component is left exactly as it already was, regardless of mode — this is how "randomize only
+some axes" works. `RandomizationSet` (the per-`Play()` aggregator) composes every enabled module
+targeting the same parameter in authoring order.
+
+**Distribution** is pluggable via `IRandomDistribution` (`[SerializeReference]` on each module) —
+`UniformDistribution` is the only built-in implementation; a new distribution is a new `[Serializable]`
+class implementing the interface, picked the same way (Unity's built-in SerializeReference type picker),
+with no change to `FeelMotionRandomizer` or the apply path.
+
+**Determinism**: each module owns its own `RandomState` (a small xorshift32 struct, independent of
+`UnityEngine.Random`'s global state — `Runtime/Core/Randomization/RandomState.cs`), seeded from the
+module's own optional `Seed` or non-deterministic otherwise. Two modules on the same action never share
+a stream, so toggling one never perturbs another's sequence.
+
+**Sampling policy** — `OncePerPlay` samples once per module at `Play()`, cached and reused for every
+later read (including every managed-loop iteration below); `EveryLoop` draws fresh every loop pass.
+
+**EveryLoop forces FeelMotion-managed loop iteration.** A single LitMotion handle with native
+`Loops=N` bakes one sampled value for all N repeats — it can't re-randomize mid-flight. Whenever an
+action has at least one enabled `EveryLoop` module *and* actually loops
+(`FeelMotionAction.RequiresManagedLoop`, `LoopCount != 1`), `PropertyMotionActionRuntime`/
+`ValueMotionAction.Runtime` hand off to `ManagedLoopPlayer`
+(`Runtime/Core/Randomization/ManagedLoopPlayer.cs`): it creates one fresh single-loop handle per
+iteration (`MotionSettingsResolver.Resolve(..., loops: 1, ...)`, shared by both runtimes so the
+randomization-aware resolution logic is written once), chained via `WithOnComplete` → `OnIterationComplete`
+→ the next iteration, until the configured loop count is reached (or forever, if negative). This
+replicates `DelayType.FirstLoop`/`EveryLoop` itself across iterations (§8's multipliers and
+`ActionSettings.StartDelay` only ever apply on the very first iteration). `IMotionActionRuntime.Handle`
+always reflects the *current* iteration's handle, so the Inspector's live progress bar (§10) and
+`Pause`/`Resume`/`Stop` all keep working unchanged — they're generic over the interface, not aware a
+managed loop exists underneath.
+
+**Known limitation — Sequential mode**: a managed-loop action's handles are created lazily, one per
+iteration, as the previous one completes — there's no single handle to `Append()` into an `LSequence`
+at build time. `MotionPlayerSession.PlaySequential` rejects it through the same per-action error
+isolation already used for an infinite native `LoopCount` (§4/§7); switch the randomizer to
+`OncePerPlay` or the player to Parallel mode instead.
+
+**Inspector** (`Editor/RandomizationSectionView.cs`): a "Randomization" `Foldout` per action, after the
+"Motion" section, with an "Add Randomizer..." button (offers Start/End Value only when the action's
+`TValue`, found by walking its generic base — `RandomizationSectionView.GetValueType` — resolves to a
+supported codec type) and one box per module (enabled, parameter, mode, policy, seed, distribution,
+per-component enable+range rows labeled from `ValueComponentCodec.GetComponentLabels`, the non-generic
+companion used because the Editor only has a runtime `Type`, not a compile-time `TValue`).

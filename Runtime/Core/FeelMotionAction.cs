@@ -1,4 +1,5 @@
 using System;
+using System.Collections.Generic;
 using LitMotion;
 using UnityEngine;
 
@@ -15,6 +16,7 @@ namespace FeelMotion
         [SerializeField] string _displayName;
         [SerializeField] bool _enabled = true;
         [SerializeField] ActionSettings _actionSettings = new();
+        [SerializeField] List<FeelMotionRandomizer> _randomizers = new();
 
         public bool Enabled => _enabled;
 
@@ -23,6 +25,44 @@ namespace FeelMotion
         /// <summary>Common playback knobs (start delay, timescale mode) shared by every action type —
         /// see Documentation/Architecture.md.</summary>
         public ActionSettings ActionSettings => _actionSettings;
+
+        /// <summary>Opt-in, independent randomization modules for this action's Start/End Value,
+        /// Duration, and Delay — empty by default, applied to the *resolved* runtime settings, never to
+        /// these authored values. See Documentation/Architecture.md's Randomization section. Only
+        /// PropertyMotionAction/ValueMotionAction (both carry a SerializableMotionSettings) resolve
+        /// these; a control action with no value settings can still hold modules, they just have
+        /// nothing to apply to.</summary>
+        public IReadOnlyList<FeelMotionRandomizer> Randomizers => _randomizers;
+
+        /// <summary>Adds a randomizer module from code (editor tooling, tests). Returns it for chaining.</summary>
+        public FeelMotionRandomizer AddRandomizer()
+        {
+            var randomizer = new FeelMotionRandomizer();
+            _randomizers.Add(randomizer);
+            return randomizer;
+        }
+
+        public void RemoveRandomizer(FeelMotionRandomizer randomizer) => _randomizers.Remove(randomizer);
+
+        /// <summary>True when this action has at least one enabled EveryLoop randomizer and actually
+        /// loops (LoopCount != 1) — forces FeelMotion-managed loop iteration (fresh single-loop
+        /// LitMotion handles per pass, via ManagedLoopPlayer) instead of LitMotion's native Loops, since
+        /// a single native multi-loop handle bakes one sample for every repeat. Checked before any
+        /// runtime/RandomizationSet exists, so it's a plain scan over the serialized modules — see
+        /// Documentation/Architecture.md's Randomization section. A managed-loop action can't be used in
+        /// Sequential playback mode; MotionPlayerSession rejects it the same way it already rejects an
+        /// infinite native LoopCount.</summary>
+        public bool RequiresManagedLoop
+        {
+            get
+            {
+                if (LoopCount == 1 || _randomizers == null) return false;
+                foreach (var randomizer in _randomizers)
+                    if (randomizer != null && randomizer.Enabled && randomizer.Policy == RandomizationSamplingPolicy.EveryLoop)
+                        return true;
+                return false;
+            }
+        }
 
         /// <summary>Authored duration of one loop pass, in seconds, for the Inspector caption — NOT
         /// scaled by the owning player's DurationMultiplier (that's a playback-time concern, this is
