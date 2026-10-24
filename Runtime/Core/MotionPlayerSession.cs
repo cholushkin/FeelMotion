@@ -128,10 +128,17 @@ namespace FeelMotion
 
         static float RuntimeProgress(FeelMotionAction action, IMotionActionRuntime runtime)
         {
+            // Check the runtime's own Completed state before the handle: once a handle is folded
+            // into a Sequential LSequence, LitMotion keeps feeding it ever-increasing Time values for
+            // as long as the whole sequence keeps running (not just during this action's own slice),
+            // and IsActive() stays true for a completed-but-preserved sequence entry by design. Without
+            // this check, an already-finished action's GetProgress (e.g. the per-loop modulo math in
+            // ComputeLoopProgress) would keep reading that stale, unbounded Time and cycle forever
+            // instead of staying at 1 — the "finished action's progress bar keeps updating" bug.
+            if (runtime.State == MotionActionState.Completed) return 1f;
+
             var handle = runtime.Handle;
-            return handle.IsActive()
-                ? action.GetProgress(handle)
-                : runtime.State == MotionActionState.Completed ? 1f : 0f;
+            return handle.IsActive() ? action.GetProgress(handle) : 0f;
         }
 
         public void Play()
@@ -156,6 +163,20 @@ namespace FeelMotion
 
             foreach (var entry in _entries)
             {
+                // An infinite-loop action can never be folded into a sequence — LitMotion's own
+                // AddToSequence throws ArgumentException("Cannot add an infinitely looping motion to
+                // a sequence.") because its TotalDuration is Infinity. Catch this before even calling
+                // Play(), so no orphaned, never-cancelled infinite motion gets created, and report it
+                // through the same per-action error isolation as every other Sequential-mode failure
+                // instead of letting that exception escape PlaySequential() uncaught.
+                if (entry.Action.LoopCount < 0)
+                {
+                    _onActionError?.Invoke(entry.Action, new InvalidOperationException(
+                        $"{entry.Action.DisplayName}: an infinite-loop action can't be used in Sequential playback mode (LitMotion can't fold an infinitely looping motion into a sequence). Give it a finite loop count, or switch this action to Parallel mode."));
+                    processedCount++;
+                    continue;
+                }
+
                 try
                 {
                     entry.Runtime.Play();

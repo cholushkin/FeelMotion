@@ -497,7 +497,17 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
                 // Loops forever just like a finite one — GetProgress reads a loop's own Delay/Duration,
                 // which stay meaningful regardless of how many times (or whether infinitely) it repeats.
                 if (sessionActive) row.Progress = player.GetActionProgress(action);
-                else if (_wasSessionActive) row.Progress = 0f; // clear once on the Playing/Paused -> idle transition
+                else if (_wasSessionActive)
+                {
+                    // Mirror the player's own common bar (MotionPlayerSession.Progress), which stays at
+                    // its filled value after a natural Completed finish and only clears on the explicit
+                    // Playing/Paused -> Idle transition (Rewind/Drop) — previously this zeroed every row
+                    // unconditionally on any Playing/Paused exit, fighting a just-finished action's own
+                    // 1f with a reset the very next tick.
+                    row.Progress = player.State == MotionPlayerState.Completed
+                        ? player.GetActionProgress(action)
+                        : 0f;
+                }
 
                 var error = action.Validate();
                 if (error != null)
