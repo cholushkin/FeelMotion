@@ -315,37 +315,7 @@ MonoBehaviour:
         _actionSettings:
           _startDelay: 0
           _timescaleMode: 0
-        _randomizers:
-        - _enabled: 1
-          _parameter: 2
-          _mode: 1
-          _policy: 0
-          _useSeed: 0
-          _seed: 0
-          _distribution:
-            rid: 1365089327742451800
-          _components:
-          - Enabled: 1
-            Min: -1
-            Max: 1
-        - _enabled: 1
-          _parameter: 1
-          _mode: 1
-          _policy: 0
-          _useSeed: 0
-          _seed: 0
-          _distribution:
-            rid: 1365089327742451801
-          _components:
-          - Enabled: 1
-            Min: -1
-            Max: 1
-          - Enabled: 1
-            Min: -1
-            Max: 1
-          - Enabled: 1
-            Min: -1
-            Max: 1
+        _randomizers: []
         _target: {fileID: 128346300}
         _valueMode: 0
         _combineMode: 0
@@ -388,12 +358,6 @@ MonoBehaviour:
           schedulerType: 0
           additionalSettings: 0
         _useWorldSpace: 0
-    - rid: 1365089327742451800
-      type: {class: UniformDistribution, ns: FeelMotion, asm: FeelMotion}
-      data: 
-    - rid: 1365089327742451801
-      type: {class: UniformDistribution, ns: FeelMotion, asm: FeelMotion}
-      data: 
 --- !u!4 &128346300
 Transform:
   m_ObjectHideFlags: 0

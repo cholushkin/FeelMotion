@@ -48,12 +48,25 @@ static class RandomizationSectionView
 
         var lastSignature = "";
 
+        var initialBuild = true;
+
         void Rebuild()
         {
+            if (!initialBuild)
+                listRoot.Unbind();
+
             listRoot.Clear();
+
             for (var i = 0; i < randomizersProperty.arraySize; i++)
-                listRoot.Add(BuildModuleRow(randomizersProperty, i, valueType, Rebuild));
+                listRoot.Add(BuildModuleRow(
+                    randomizersProperty, i, valueType, Rebuild));
+
             lastSignature = Signature(randomizersProperty);
+
+            if (!initialBuild)
+                listRoot.Bind(randomizersProperty.serializedObject);
+
+            initialBuild = false;
         }
 
         Rebuild();
