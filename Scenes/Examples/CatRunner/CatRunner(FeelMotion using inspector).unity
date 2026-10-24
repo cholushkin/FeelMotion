@@ -256,6 +256,29 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38602125}
   m_CullTransparentMesh: 1
+--- !u!114 &162251333
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 607968215}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 73e7f974c54c1fd743d4b970dc8cae57, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: FeelMotion.Samples::FeelMotion.Samples.GameHud
+  _coinAmountText: {fileID: 1068803048}
+  _fishAmountText: {fileID: 607454560}
+  _levelText: {fileID: 38602127}
+  _progressFiller: {fileID: 595348223}
+  _heartIcons:
+  - {fileID: 292780318}
+  - {fileID: 197279763}
+  - {fileID: 1735924787}
+  _spawner: {fileID: 1682884510}
+  _maxLives: 3
+  _progressPerConsume: 0.25
 --- !u!1 &197279761
 GameObject:
   m_ObjectHideFlags: 0
@@ -3726,7 +3749,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1369868902
@@ -3985,7 +4008,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1533272593
@@ -4554,7 +4577,7 @@ MonoBehaviour:
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument:
+          m_StringArgument: 
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &1779039158
@@ -10383,29 +10406,6 @@ AudioSource:
     m_PreInfinity: 2
     m_PostInfinity: 2
     m_RotationOrder: 4
---- !u!114 &162251333
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 607968215}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: 73e7f974c54c1fd743d4b970dc8cae57, type: 3}
-  m_Name:
-  m_EditorClassIdentifier: FeelMotion.Samples::FeelMotion.Samples.GameHud
-  _coinAmountText: {fileID: 1068803048}
-  _fishAmountText: {fileID: 607454560}
-  _levelText: {fileID: 38602127}
-  _progressFiller: {fileID: 595348223}
-  _heartIcons:
-  - {fileID: 292780318}
-  - {fileID: 197279763}
-  - {fileID: 1735924787}
-  _spawner: {fileID: 1682884510}
-  _maxLives: 3
-  _progressPerConsume: 0.25
 --- !u!1660057539 &9223372036854775807
 SceneRoots:
   m_ObjectHideFlags: 0
