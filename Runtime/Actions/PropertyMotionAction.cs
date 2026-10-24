@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Base for actions that tween one property on one UnityEngine.Object target. Config lives here
     /// (serialized, authored); captured values/handle/state live on PropertyMotionActionRuntime,
-    /// created fresh per Play() — see Documentation/Architecture.md.
-    /// </summary>
+    /// created fresh per Play().
     [Serializable]
     public abstract class PropertyMotionAction<TObject, TValue, TOptions, TAdapter> : FeelMotionAction
         where TObject : UnityEngine.Object
@@ -24,9 +22,8 @@ namespace FeelMotion
         public TObject Target => _target;
         public MotionValueMode ValueMode => _valueMode;
 
-        /// <summary>How RelativeToCurrent combines the captured initial value with the authored
-        /// EndValue — Add (offset) or Multiply (factor, component-wise for vectors/color). Ignored by
-        /// Absolute/FromCurrentTo, which never combine the initial value with EndValue.</summary>
+        /// How RelativeToCurrent combines the captured initial value with the authored EndValue — Add
+        /// (offset) or Multiply (factor, component-wise for vectors/color). Ignored by Absolute/FromCurrentTo.
         public MotionValueCombineMode CombineMode => _combineMode;
 
         public SerializableMotionSettings<TValue, TOptions> Settings => _settings;
@@ -40,8 +37,8 @@ namespace FeelMotion
         public override float GetProgress(in MotionHandle handle)
             => ComputeLoopProgress(handle, _settings?.DelayType ?? DelayType.FirstLoop);
 
-        /// <summary>Configures this action from code instead of the Inspector — for runtime-built
-        /// sequences and tests. Returns this instance for fluent chaining.</summary>
+        /// Configures this action from code instead of the Inspector — for runtime-built sequences and
+        /// tests. Returns this instance for fluent chaining.
         public PropertyMotionAction<TObject, TValue, TOptions, TAdapter> Configure(
             TObject target, MotionValueMode valueMode, SerializableMotionSettings<TValue, TOptions> settings,
             MotionValueCombineMode combineMode = MotionValueCombineMode.Add)
@@ -53,36 +50,28 @@ namespace FeelMotion
             return this;
         }
 
-        /// <summary>Reads the property's current value from the target.</summary>
         protected internal abstract TValue GetValue(TObject target);
 
-        /// <summary>Writes a value to the property on the target.</summary>
         protected internal abstract void SetValue(TObject target, in TValue value);
 
-        /// <summary>Combines a captured base value with an authored delta as an offset — used by
-        /// MotionValueMode.RelativeToCurrent when CombineMode is Add.</summary>
+        /// Offset combine for MotionValueMode.RelativeToCurrent when CombineMode is Add.
         protected internal abstract TValue Add(in TValue baseValue, in TValue delta);
 
-        /// <summary>Combines a captured base value with an authored delta as a factor (component-wise
-        /// for vectors/color) — used by MotionValueMode.RelativeToCurrent when CombineMode is Multiply.
-        /// Needed for scale-like properties, where Add distorts rather than scales.</summary>
+        /// Factor combine (component-wise for vectors/color) for RelativeToCurrent when CombineMode is
+        /// Multiply — needed for scale-like properties, where Add distorts rather than scales.
         protected internal abstract TValue Multiply(in TValue baseValue, in TValue factor);
 
-        /// <summary>Returns the point reached when traveling from <paramref name="from"/> toward
-        /// <paramref name="to"/> scaled by <paramref name="factor"/> — <c>factor == 1</c> returns
-        /// <paramref name="to"/> unchanged, <c>0</c> returns <paramref name="from"/>. Backs the global
-        /// intensity multiplier (Documentation/Architecture.md).</summary>
+        /// Point reached traveling from `from` toward `to` scaled by `factor` (1 = to, 0 = from).
+        /// Backs the global intensity multiplier.
         protected internal abstract TValue ScaleReach(in TValue from, in TValue to, float factor);
 
         public override IMotionActionRuntime CreateRuntime(in MotionPlaybackContext context)
             => new PropertyMotionActionRuntime<TObject, TValue, TOptions, TAdapter>(this, context);
     }
 
-    /// <summary>
     /// Per-Play() runtime for a PropertyMotionAction: owns the captured initial value and the
     /// MotionHandle for exactly one play. Never reused across replays, so overlapping/repeated
     /// Play() calls can't corrupt each other's state.
-    /// </summary>
     internal sealed class PropertyMotionActionRuntime<TObject, TValue, TOptions, TAdapter> : IMotionActionRuntime
         where TObject : UnityEngine.Object
         where TValue : unmanaged
@@ -202,10 +191,9 @@ namespace FeelMotion
                 .Bind(this, static (x, state) => state.ApplyValue(x));
         }
 
-        /// <summary>Builds and binds exactly one single-loop handle for ManagedLoopPlayer — used only
-        /// when _action.RequiresManagedLoop. isFirstIteration mirrors ManagedLoopPlayer's own contract:
-        /// true only for the very first pass, so ActionSettings.StartDelay and a FirstLoop delay are
-        /// paid once, not every iteration.</summary>
+        /// Builds and binds exactly one single-loop handle for ManagedLoopPlayer. isFirstIteration
+        /// mirrors ManagedLoopPlayer's contract: true only for the first pass, so StartDelay/FirstLoop
+        /// delay are paid once, not every iteration.
         MotionHandle BuildIterationHandle(
             SerializableMotionSettings<TValue, TOptions> baseSettings,
             ActionSettings actionSettings,

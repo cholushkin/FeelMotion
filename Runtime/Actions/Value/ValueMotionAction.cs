@@ -4,13 +4,9 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Base for actions that tween a bare value and broadcast it each tick instead of writing it onto a
-    /// UnityEngine.Object target — e.g. driving a shader/UI property via UnityEvent wiring in the
-    /// Inspector. There is no target, so there's nothing to capture/restore and no global
-    /// IntensityMultiplier/MotionValueMode to apply — those only make sense relative to a captured
-    /// property value (see PropertyMotionAction). A subclass only has to broadcast the tweened value.
-    /// </summary>
+    /// UnityEngine.Object target. No target means nothing to capture/restore and no IntensityMultiplier/
+    /// MotionValueMode to apply (those only make sense relative to a captured property — PropertyMotionAction).
     [Serializable]
     public abstract class ValueMotionAction<TValue, TOptions, TAdapter> : FeelMotionAction
         where TValue : unmanaged
@@ -30,7 +26,7 @@ namespace FeelMotion
         public override float GetProgress(in MotionHandle handle)
             => ComputeLoopProgress(handle, _settings?.DelayType ?? DelayType.FirstLoop);
 
-        /// <summary>Broadcasts one tweened value — typically invokes a serialized UnityEvent&lt;TValue&gt;.</summary>
+        /// Broadcasts one tweened value — typically invokes a serialized UnityEvent&lt;TValue&gt;.
         protected abstract void InvokeChanged(TValue value);
 
         public override IMotionActionRuntime CreateRuntime(in MotionPlaybackContext context) => new Runtime(this, context);

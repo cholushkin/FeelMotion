@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Value-typed PropertyMotionAction bases — implement Add/ScaleReach once per value type so a
-    /// concrete action (in this or another assembly) only has to supply GetValue/SetValue. Generic over
-    /// TOptions/TAdapter so the same base covers plain, Punch, and Shake variants of a value type.
-    /// </summary>
+    /// concrete action only has to supply GetValue/SetValue. Generic over TOptions/TAdapter so the same
+    /// base covers plain, Punch, and Shake variants of a value type.
     [Serializable]
     public abstract class FloatPropertyMotionAction<TObject, TOptions, TAdapter> : PropertyMotionAction<TObject, float, TOptions, TAdapter>
         where TObject : UnityEngine.Object

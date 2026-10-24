@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>Shake: a randomized vibration added on top of the captured position — Settings.EndValue is the shake strength, not a destination. Author with MotionValueMode.FromCurrentTo.</summary>
+    /// Shake adds a randomized vibration on top of the captured position — EndValue is the shake
+    /// strength, not a destination. Author with MotionValueMode.FromCurrentTo.
     [Serializable]
     [FeelMotionActionMenu("Transform/Position (Shake)")]
     public sealed class TransformPositionShakeAction : Vector3PropertyMotionAction<Transform, ShakeOptions, Vector3ShakeMotionAdapter>

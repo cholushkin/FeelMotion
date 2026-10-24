@@ -7,13 +7,9 @@ using UnityEngine.TestTools;
 
 namespace FeelMotion.Tests
 {
-    /// <summary>
     /// Covers MotionPlayerSession orchestration through the public FeelMotionPlayer API: zero-action
-    /// completion, per-action error isolation (Documentation/Architecture.md §7), and the merged
-    /// Play()/Resume() control-API semantics. Deliberately tests through FeelMotionPlayer rather than
-    /// the internal MotionPlayerSession/runtime types, matching this project's convention of testing
-    /// the public surface.
-    /// </summary>
+    /// completion, per-action error isolation (Architecture.md §7), and merged Play()/Resume() semantics.
+    /// Deliberately tests through FeelMotionPlayer rather than the internal session/runtime types.
     public class FeelMotionPlayerTests
     {
         GameObject _go;
@@ -69,10 +65,8 @@ namespace FeelMotion.Tests
             var throwing = new ThrowingAction();
             player.SetActions(new FeelMotionAction[] { throwing });
 
-            // FeelMotionPlayer.HandleActionError logs the caught exception (Debug.LogException) as part
-            // of its normal error-isolation path (Architecture.md §7) — an expected, by-design log, not
-            // a real test failure. Without this, Unity Test Framework auto-fails the test on the
-            // unhandled Exception-level log, independently of the assertions below.
+            // Expected, by-design log from HandleActionError — without it UTF auto-fails on the
+            // unhandled Exception-level log.
             LogAssert.Expect(LogType.Exception, new Regex("InvalidOperationException"));
 
             player.Play();
@@ -161,7 +155,7 @@ namespace FeelMotion.Tests
             player.Drop();
         }
 
-        /// <summary>Fails every time Play() is called — exercises the per-action error isolation path.</summary>
+        /// Fails every time Play() is called — exercises the per-action error isolation path.
         sealed class ThrowingAction : FeelMotionAction
         {
             public override IMotionActionRuntime CreateRuntime(in MotionPlaybackContext context) => new Runtime();
@@ -180,7 +174,7 @@ namespace FeelMotion.Tests
             }
         }
 
-        /// <summary>Sets a flag as soon as its runtime's Play() runs, then completes instantly.</summary>
+        /// Sets a flag as soon as its runtime's Play() runs, then completes instantly.
         sealed class FlagAction : FeelMotionAction
         {
             public bool WasPlayed;
@@ -220,8 +214,8 @@ namespace FeelMotion.Tests
             }
         }
 
-        /// <summary>Counts how many times its runtime's Play() actually ran, and plays for long enough
-        /// that a test can safely call FeelMotionPlayer.Play() a second time before it finishes.</summary>
+        /// Counts how many times its runtime's Play() ran, and plays long enough that a test can safely
+        /// call FeelMotionPlayer.Play() a second time before it finishes.
         sealed class CountingAction : FeelMotionAction
         {
             public int PlayCount;

@@ -4,11 +4,9 @@ using UnityEngine;
 
 namespace FeelMotion.Tests
 {
-    /// <summary>
     /// Covers FeelMotionAction.Validate() on the Rendering/Material actions — surfaces a shader
-    /// property name that doesn't exist on the assigned material as an authoring error (FeelMotion
-    /// issue: "material action can't find a parameter"), instead of silently doing nothing.
-    /// </summary>
+    /// property name missing on the assigned material as an authoring error instead of silently
+    /// doing nothing.
     public class MaterialActionTests
     {
         Material _material;

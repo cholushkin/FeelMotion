@@ -6,7 +6,7 @@ using UnityEngine.UI;
 
 namespace FeelMotion
 {
-    /// <summary>Animates the color of any UGUI Graphic — Image, RawImage, Text, or a custom subclass.</summary>
+    /// Animates the color of any UGUI Graphic — Image, RawImage, Text, or a custom subclass.
     [Serializable]
     [FeelMotionActionMenu("UI/Graphic/Color")]
     public sealed class GraphicColorAction : PropertyMotionAction<Graphic, Color, NoOptions, ColorMotionAdapter>

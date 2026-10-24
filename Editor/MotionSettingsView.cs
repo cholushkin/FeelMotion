@@ -7,21 +7,12 @@ using UnityEngine.UIElements;
 
 namespace FeelMotion.Editor;
 
-/// <summary>
-/// Renders a FeelMotionAction's "Motion" block (a LitMotion SerializableMotionSettings&lt;,&gt;
-/// field) ourselves, instead of delegating to LitMotion.Editor's own
-/// SerializableMotionSettingsDrawer. Same grouped layout (value/duration, ease, delay, loops,
-/// options, additional settings), with two differences: an easings-cheatsheet link button sits next
-/// to the Ease dropdown, and the custom AnimationCurve field is always visible — including for a
-/// predefined Ease — so a user can pick a preset first and still see/tweak the curve, rather than
-/// only after switching Ease to CustomAnimationCurve.
+/// Renders a FeelMotionAction's "Motion" block (SerializableMotionSettings&lt;,&gt;) ourselves instead
+/// of LitMotion.Editor's own drawer: same grouped layout, plus an easings-cheatsheet link and an
+/// always-visible AnimationCurve field so a preset Ease can still be tweaked as a curve.
 ///
-/// FixedString-valued settings (TMP/UI Text, StringValue actions) fall back to LitMotion's own
-/// drawer: its FixedString editing (LitMotion.Editor.PropertyFieldHelper/SerializedFixedBytesView) is
-/// internal to that assembly, so we can't reproduce the start/end value fields ourselves — only the
-/// ease/curve improvement is FeelMotion-specific anyway, the rest of this layout is identical to what
-/// LitMotion already renders.
-/// </summary>
+/// FixedString-valued settings (TMP/UI Text, StringValue) fall back to LitMotion's own drawer — its
+/// FixedString editing is internal to that assembly and can't be reproduced here.
 static class MotionSettingsView
 {
     const string EasingsCheatsheetUrl = "https://cholushkin.github.io/cheatsheets/easings.html";
@@ -120,12 +111,9 @@ static class MotionSettingsView
         if (relative != null) root.Add(new PropertyField(relative));
     }
 
-    /// <summary>Keeps the curve matching whichever preset Ease is selected, and switches Ease to
-    /// CustomAnimationCurve the moment the user edits the curve directly — polling-based (like the
-    /// rest of this Inspector) rather than event callbacks, since Unity's binding system re-syncs a
-    /// bound control via SetValueWithoutNotify, which a value-changed callback can't reliably tell
-    /// apart from a genuine user edit. Each tick only writes something when it actually changed, so
-    /// this never fights with the user or thrashes Undo while nothing is happening.</summary>
+    /// Keeps the curve matching the selected preset Ease, and switches Ease to CustomAnimationCurve the
+    /// moment the user edits the curve directly. Polling-based — Unity's binding system re-syncs a bound
+    /// control via SetValueWithoutNotify, which a value-changed callback can't tell apart from a real edit.
     static void SyncEaseAndCurve(VisualElement root, SerializedProperty ease, SerializedProperty curve)
     {
         var lastEase = (Ease)ease.enumValueIndex;

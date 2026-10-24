@@ -5,17 +5,12 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// Plays a one-shot clip on an AudioSource — not a tween. LitMotion.Animation's audio components
-    /// only animate continuous Volume/Pitch; one-shot SFX playback is genuinely missing there, so this
-    /// is implemented from scratch for FeelMotion.
+    /// Plays a one-shot clip on an AudioSource — not a tween.
     ///
-    /// Unlike EventAction/DelayAction (which fire their effect immediately in Play() and only use
-    /// ActionSettings.StartDelay to time when they report Completed, for sequencing), this action's
-    /// ActionSettings.StartDelay is a *real* playback delay — PlayOneShot itself is deferred, because a
-    /// sound effect's whole purpose here is to land at a specific offset (e.g. a "woosh" that trails a
-    /// "quack" by 0.1s inside the same Parallel-mode player).
-    /// </summary>
+    /// Unlike EventAction/DelayAction (which fire immediately and only use StartDelay to time when they
+    /// report Completed), here ActionSettings.StartDelay is a real playback delay — PlayOneShot itself
+    /// is deferred, so a sound can land at a specific offset (e.g. a "woosh" trailing a "quack" by 0.1s
+    /// in the same Parallel-mode player).
     [Serializable]
     [FeelMotionActionMenu("Audio/Play One Shot")]
     public sealed class AudioPlayOneShotAction : FeelMotionAction

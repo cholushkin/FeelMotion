@@ -5,18 +5,15 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Everything one FeelMotionPlayer.Play() call needs: the per-action runtimes created for this
-    /// play, the Sequential/Parallel wiring, and this session's own explicit MotionPlayerState.
-    /// Created fresh by FeelMotionPlayer.Play() and discarded on completion/replace — see
+    /// play, the Sequential/Parallel wiring, and this session's own explicit MotionPlayerState. Created
+    /// fresh by FeelMotionPlayer.Play() and discarded on completion/replace — see
     /// Documentation/Architecture.md §4.
     ///
     /// Sequential mode folds every action's handle into one LitMotion LSequence, giving the whole
-    /// session a single master MotionHandle (no recursive queue advancement). Parallel mode keeps
-    /// each action's handle independent so per-action Pause/Resume keeps working — see
-    /// Documentation/Architecture.md §4's known limitation for why Sequential mode can't offer the
-    /// same guarantee.
-    /// </summary>
+    /// session a single master MotionHandle (no recursive queue advancement). Parallel mode keeps each
+    /// action's handle independent so per-action Pause/Resume keeps working — see
+    /// Documentation/Architecture.md §4's known limitation for why Sequential can't offer the same guarantee.
     internal sealed class MotionPlayerSession
     {
         readonly struct Entry
@@ -92,8 +89,8 @@ namespace FeelMotion
             }
         }
 
-        /// <summary>0-1 progress estimate. Sequential reads it straight off the master handle;
-        /// Parallel averages each still-tracked handle's own progress.</summary>
+        /// 0-1 progress estimate. Sequential reads it straight off the master handle; Parallel averages
+        /// each still-tracked handle's own progress.
         public float Progress
         {
             get
@@ -114,10 +111,10 @@ namespace FeelMotion
             }
         }
 
-        /// <summary>0-1 progress for one action currently tracked by this session — used by the
-        /// Inspector to fill each action row's own progress bar while the whole player is playing (not
-        /// just during a standalone per-action preview). Returns 0 for an action that isn't part of this
-        /// session (disabled or failed validation).</summary>
+        /// 0-1 progress for one action currently tracked by this session — used by the Inspector to
+        /// fill each action row's own progress bar while the whole player is playing (not just during a
+        /// standalone per-action preview). 0 for an action that isn't part of this session (disabled or
+        /// failed validation).
         public float GetActionProgress(FeelMotionAction action)
         {
             foreach (var entry in _entries)

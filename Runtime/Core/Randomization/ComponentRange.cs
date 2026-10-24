@@ -2,11 +2,9 @@ using System;
 
 namespace FeelMotion;
 
-/// <summary>
-/// One randomizable component's range (e.g. a Vector3's Y) plus whether it's included at all. A
-/// disabled component is left exactly at whatever value it already had, regardless of
-/// RandomizationMode — this is how "configurable components" (randomize only some axes) works.
-/// </summary>
+/// One randomizable component's range (e.g. a Vector3's Y) plus whether it's included. A disabled
+/// component is left at its existing value regardless of RandomizationMode — how "randomize only
+/// some axes" works.
 [Serializable]
 public struct ComponentRange
 {

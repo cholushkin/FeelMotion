@@ -4,9 +4,8 @@ using UnityEngine.UI;
 
 namespace FeelMotion.Samples
 {
-    /// <summary>Minimal score/lives/progress HUD for the CatRunner demo. Entity calls straight into
-    /// this on consume — this is a tiny self-contained sample, not Game/Runtime, so a plain singleton
-    /// is simpler than wiring up VitalRouter for it.</summary>
+    /// Minimal score/lives/progress HUD for the CatRunner demo. A tiny self-contained sample, so a
+    /// plain singleton is simpler here than wiring up VitalRouter.
     public sealed class GameHud : MonoBehaviour
     {
         public static GameHud Instance { get; private set; }

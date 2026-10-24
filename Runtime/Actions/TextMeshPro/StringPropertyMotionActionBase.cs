@@ -5,8 +5,8 @@ using Unity.Collections;
 
 namespace FeelMotion
 {
-    /// <summary>String property base — interpolation/intensity-scaling are meaningless for text, so
-    /// Add/ScaleReach just return the target value unchanged.</summary>
+    /// String property base — interpolation/intensity-scaling are meaningless for text, so
+    /// Add/ScaleReach just return the target value unchanged.
     [Serializable]
     public abstract class StringPropertyMotionActionBase<TObject> : PropertyMotionAction<TObject, FixedString512Bytes, StringOptions, LitMotion.Adapters.FixedString512BytesMotionAdapter>
         where TObject : UnityEngine.Object

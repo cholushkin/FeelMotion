@@ -3,17 +3,11 @@ using LitMotion;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Drives "every loop" re-randomization by creating one fresh single-loop LitMotion handle per
-    /// iteration instead of relying on LitMotion's own native Loops (which bakes one set of values for
-    /// every repeat). Owned by a PropertyMotionActionRuntime/ValueMotionAction.Runtime whose action has
-    /// FeelMotionAction.RequiresManagedLoop. Can't be folded into a Sequential LSequence — each
-    /// iteration's handle is created lazily, as the previous one completes, not all up front at Play()
-    /// time — so MotionPlayerSession rejects this combination the same way it already rejects an
-    /// infinite native LoopCount in Sequential mode. See Documentation/Architecture.md's Randomization
-    /// section. Public (not internal) — PropertyMotionAction (FeelMotion.asmdef) and ValueMotionAction
-    /// (the separate FeelMotion.Value.asmdef, Architecture.md §9) both construct one.
-    /// </summary>
+    /// iteration, instead of relying on native Loops (which bakes one set of values for every repeat).
+    /// Each iteration's handle is created lazily as the previous one completes, not up front at Play(),
+    /// so it can't be folded into a Sequential LSequence — MotionPlayerSession rejects that combination.
+    /// Public because both PropertyMotionAction and ValueMotionAction (separate asmdefs) construct one.
     public sealed class ManagedLoopPlayer
     {
         readonly Func<bool, MotionHandle> _playOneLoop;
@@ -25,10 +19,9 @@ namespace FeelMotion
 
         public MotionHandle Handle { get; private set; }
 
-        /// <summary><paramref name="playOneLoop"/> builds and binds exactly one single-loop handle,
-        /// wiring its own completion back to OnIterationComplete; its bool argument is true only for
-        /// the very first iteration (the one that pays ActionSettings.StartDelay and a FirstLoop
-        /// delay).</summary>
+        /// `playOneLoop` builds and binds one single-loop handle, wiring completion back to
+        /// OnIterationComplete; its bool argument is true only for the first iteration (the one paying
+        /// ActionSettings.StartDelay and a FirstLoop delay).
         public ManagedLoopPlayer(Func<bool, MotionHandle> playOneLoop, int loopCount, Action onCompleted)
         {
             _playOneLoop = playOneLoop;
@@ -38,8 +31,7 @@ namespace FeelMotion
 
         public void Play() => Handle = _playOneLoop(true);
 
-        /// <summary>Wired as each iteration's own WithOnComplete callback — called by LitMotion when
-        /// one single-loop pass finishes. Never call this directly.</summary>
+        /// Wired as each iteration's WithOnComplete callback. Never call this directly.
         public void OnIterationComplete()
         {
             if (_stopped) return;
@@ -57,9 +49,8 @@ namespace FeelMotion
         public void Pause()
         {
             // Handle is a property, not a field — `Handle.PlaybackSpeed = x` would try to mutate the
-            // getter's return value (CS1612). PlaybackSpeed's setter writes through the handle's own
-            // internal id regardless of which copy calls it, so reading into a local first is enough;
-            // there's nothing to write back since the id/identity itself never changes.
+            // getter's return value (CS1612). PlaybackSpeed's setter writes through the handle's own id
+            // regardless of which copy calls it, so reading into a local first is enough.
             var handle = Handle;
             if (handle.IsActive()) handle.PlaybackSpeed = 0f;
         }
@@ -70,9 +61,8 @@ namespace FeelMotion
             if (handle.IsActive()) handle.PlaybackSpeed = 1f;
         }
 
-        /// <summary>Stops spawning further iterations and resolves the current one —
-        /// <paramref name="complete"/> true completes it in place (MotionStopMode.Complete*), false
-        /// cancels it (MotionStopMode.Cancel*).</summary>
+        /// Stops spawning further iterations and resolves the current one — `complete` true completes
+        /// it in place (MotionStopMode.Complete*), false cancels it (MotionStopMode.Cancel*).
         public void Stop(bool complete)
         {
             _stopped = true;

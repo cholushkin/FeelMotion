@@ -9,16 +9,11 @@ using UnityEngine.TestTools;
 
 namespace FeelMotion.Tests
 {
-    /// <summary>
-    /// Covers the opt-in randomization system (Documentation/Architecture.md's Randomization section):
-    /// the value-component codec, the three RandomizationModes, seeded determinism, OncePerPlay vs.
-    /// EveryLoop sampling, RequiresManagedLoop, and the Sequential-mode rejection of a managed-loop
-    /// action. Every assertion drives completion synchronously via MotionHandle.TryComplete(), matching
-    /// PropertyMotionActionTests.cs's established convention — none of these need real time to pass.
-    /// Several tests use a Min==Max range so a mode's math is checked against an exact value instead of
-    /// a probabilistic one; only the OncePerPlay/EveryLoop and seed tests need genuine randomness, and
-    /// those assert by comparison (equal/not-equal) rather than a hardcoded sampled value.
-    /// </summary>
+    /// Covers the randomization system (Architecture.md §12): the value-component codec, the three
+    /// RandomizationModes, seeded determinism, OncePerPlay/EveryLoop sampling, RequiresManagedLoop, and
+    /// the Sequential-mode rejection of a managed-loop action. Assertions complete synchronously via
+    /// MotionHandle.TryComplete(). Most tests use a Min==Max range so the result is exact rather than
+    /// probabilistic; only the sampling/seed tests need genuine randomness.
     public class RandomizationTests
     {
         GameObject _go;
@@ -34,10 +29,8 @@ namespace FeelMotion.Tests
             Assert.Less(Vector3.Distance(actual, expected), 0.0001f, message ?? $"expected {expected} but was {actual}");
         }
 
-        // Configure() returns the PropertyMotionAction<,,,> base (for fluent chaining from any concrete
-        // action), not TransformPositionAction itself — matching PropertyMotionActionTests.cs's own
-        // `var action = new TransformPositionAction().Configure(...)` pattern. Every member this file
-        // needs (AddRandomizer, RequiresManagedLoop, CreateRuntime, ...) lives on that base anyway.
+        // Configure() returns the PropertyMotionAction<,,,> base, not TransformPositionAction itself —
+        // every member this file needs lives on that base anyway.
         PropertyMotionAction<Transform, Vector3, NoOptions, Vector3MotionAdapter> CreateAction(Vector3 endValue, float duration = 0.01f, int loops = 1)
         {
             _go = new GameObject("test");
@@ -76,10 +69,7 @@ namespace FeelMotion.Tests
         [Test]
         public void ValueComponentCodec_UnsupportedType_HasNoInstance()
         {
-            // FixedString* actions (TMP/UI Text, StringValue) have no component codec — Start/End Value
-            // randomization is unavailable for them, Duration/Delay randomization still works. Quaternion
-            // stands in here as a real, unmanaged-but-unsupported TValue (no built-in FeelMotion action
-            // currently tweens one directly, but the codec genuinely doesn't cover it).
+            // Quaternion stands in for a real, unmanaged-but-unsupported TValue — no codec covers it.
             Assert.IsNull(ValueComponentCodec<Quaternion>.Instance);
         }
 
@@ -247,10 +237,8 @@ namespace FeelMotion.Tests
             var xSamples = new System.Collections.Generic.List<float>();
             var ySamples = new System.Collections.Generic.List<float>();
 
-            // Each TryComplete() both snaps the current iteration to its own resolved EndValue and
-            // (via ManagedLoopPlayer.OnIterationComplete, wired as that handle's WithOnComplete) spawns
-            // the next iteration synchronously — same forcing technique PropertyMotionActionTests.cs
-            // uses for Stop(Complete), just driven loop-by-loop instead of once.
+            // Each TryComplete() snaps the current iteration and (via ManagedLoopPlayer's
+            // WithOnComplete) synchronously spawns the next one.
             for (var i = 0; i < 5; i++)
             {
                 runtime.Handle.TryComplete();
@@ -287,8 +275,7 @@ namespace FeelMotion.Tests
             var completed = false;
             player.Completed += () => completed = true;
 
-            // Same expected error-isolation log as FeelMotionPlayerTests.cs's infinite-loop case —
-            // HandleActionError logs the caught exception as part of its normal, by-design path.
+            // HandleActionError logs the caught exception by design.
             LogAssert.Expect(LogType.Exception, new Regex("InvalidOperationException"));
 
             player.Play();

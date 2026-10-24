@@ -4,12 +4,9 @@ using UnityEngine;
 
 namespace FeelMotion.Tests
 {
-    /// <summary>
     /// Covers MotionValueMode semantics, the restore-independent-of-stop contract, and ActionSettings
-    /// (Documentation/Architecture.md §3, §6). Every assertion here is synchronous: Stop(Complete)
-    /// forces the handle to its end value immediately, so none of these need to wait for real time to
-    /// pass.
-    /// </summary>
+    /// (Architecture.md §3, §6). Assertions are synchronous: Stop(Complete) forces the handle to its
+    /// end value immediately.
     public class PropertyMotionActionTests
     {
         GameObject _go;
@@ -154,17 +151,11 @@ namespace FeelMotion.Tests
             var runtime = action.CreateRuntime(MotionPlaybackContext.Default);
             runtime.Play();
 
-            // Play() alone writes nothing synchronously: PropertyMotionActionRuntime builds its tween
-            // from a SerializableMotionSettings, which goes through LMotion.Create(MotionSettings) —
-            // that overload takes ImmediateBind from the settings (default false), unlike the fluent
-            // builder's own default of true. So without a real engine tick, the value never moves and
-            // Cancel would trivially "not restore" a value that was never written in the first place.
-            // Advancing the handle's own Time (same pattern as GetProgress_*DelayType_* below) forces
-            // one synchronous evaluation, same as a real mid-flight tick would.
+            // Play() alone writes nothing synchronously (ImmediateBind defaults false via
+            // LMotion.Create(MotionSettings)) — advance Time to force one synchronous evaluation.
             var handle = runtime.Handle;
             handle.Time = 0.5d;
 
-            // Plain Cancel must NOT restore — that's the whole point of separating the two (problem 4).
             runtime.Stop(MotionStopMode.Cancel);
 
             Assert.AreNotEqual(new Vector3(3f, 1f, 0f), _go.transform.localPosition,
@@ -346,8 +337,7 @@ namespace FeelMotion.Tests
             runtime.Play();
             var handle = runtime.Handle;
 
-            // Past the one-time initial delay (0.2s) and loop 0's duration (1s), halfway through loop 1 —
-            // which, unlike EveryLoop, has no delay of its own.
+            // Past the one-time initial delay (0.2s) and loop 0's duration (1s), halfway through loop 1.
             handle.Time = 0.2d + 1.0d + 0.5d;
             Assert.AreEqual(0.5f, action.GetProgress(handle), 0.01f,
                 "FirstLoop must not re-apply the delay on loops after the first.");

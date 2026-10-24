@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>Punch: a damped scale vibration added on top of the captured scale — Settings.EndValue is the punch strength, not a destination. Author with MotionValueMode.FromCurrentTo.</summary>
+    /// Punch adds a damped vibration on top of the captured scale — EndValue is the punch strength,
+    /// not a destination. Author with MotionValueMode.FromCurrentTo.
     [Serializable]
     [FeelMotionActionMenu("Transform/Scale (Punch)")]
     public sealed class TransformScalePunchAction : Vector3PropertyMotionAction<Transform, PunchOptions, Vector3PunchMotionAdapter>

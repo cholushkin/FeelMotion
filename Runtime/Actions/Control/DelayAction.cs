@@ -4,10 +4,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// A pure wait, with no target. Lets a Sequential sequence have a gap at a specific point
-    /// without needing a separate per-sequence delay setting on the player.
-    /// </summary>
+    /// A pure wait, with no target — lets a Sequential sequence have a gap at a specific point
+    /// without a separate per-sequence delay setting on the player.
     [Serializable]
     [FeelMotionActionMenu("Control/Delay")]
     public sealed class DelayAction : FeelMotionAction

@@ -366,4 +366,7 @@ isolation already used for an infinite native `LoopCount` (§4/§7); switch the 
 `TValue`, found by walking its generic base — `RandomizationSectionView.GetValueType` — resolves to a
 supported codec type) and one box per module (enabled, parameter, mode, policy, seed, distribution,
 per-component enable+range rows labeled from `ValueComponentCodec.GetComponentLabels`, the non-generic
-companion used because the Editor only has a runtime `Type`, not a compile-time `TValue`).
+companion used because the Editor only has a runtime `Type`, not a compile-time `TValue`). `_components`
+is grown only on creation (`AddRandomizer`) or in reaction to a Parameter change — never while a row is
+being built — since mutating serialized data mid-build left bound `PropertyField`s broken until the
+object was deselected and reselected.

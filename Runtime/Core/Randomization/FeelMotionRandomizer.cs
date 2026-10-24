@@ -4,14 +4,11 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// One opt-in randomization module on a FeelMotionAction — targets exactly one authored parameter
+    /// One opt-in randomization module on a FeelMotionAction — targets one authored parameter
     /// (Start/End Value, Duration, Delay) and perturbs it per RandomizationMode, independently of every
-    /// other module on the same action (each gets its own RandomState — see CreateState). Applied to
-    /// the *resolved* runtime settings right before a LitMotion handle is built, never to the serialized
-    /// authored value on SerializableMotionSettings. See Documentation/Architecture.md's Randomization
-    /// section.
-    /// </summary>
+    /// other module on the same action (own RandomState, see CreateState). Applied to the resolved
+    /// runtime settings right before a LitMotion handle is built, never to the authored
+    /// SerializableMotionSettings itself.
     [Serializable]
     public sealed class FeelMotionRandomizer
     {
@@ -68,9 +65,8 @@ namespace FeelMotion
 
         public List<ComponentRange> Components => _components ??= new List<ComponentRange>();
 
-        /// <summary>Creates this module's own RNG stream for one Play() — deterministic when UseSeed is
-        /// set, a fresh non-deterministic stream otherwise. Never shared with any other module, even on
-        /// the same action, so toggling one module never perturbs another's sequence.</summary>
+        /// Creates this module's own RNG stream for one Play() — deterministic when UseSeed is set,
+        /// non-deterministic otherwise. Never shared with any other module.
         public RandomState CreateState() => _useSeed ? RandomState.FromSeed(_seed) : RandomState.NonDeterministic();
     }
 }

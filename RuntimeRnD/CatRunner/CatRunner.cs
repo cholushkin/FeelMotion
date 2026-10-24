@@ -9,16 +9,12 @@ using UnityEngine.Rendering;
 
 namespace FeelMotion.Samples
 {
-    /// <summary>
-    /// One-button jump demo — a FeelMotion rebuild of Feel's FeelDuck example (Assets/Libs/Feel/
-    /// FeelDemos/Duck). Mirrors Duck.cs's cooldown/Jump/Land shape, but every "juice" effect (camera
-    /// shake, squash/stretch, sound, smoke, screen pop, landing wobble) is a FeelMotionAction built in
-    /// code and played through a FeelMotionPlayer, instead of Feel's MMFeedbacks.
+    /// One-button jump demo — a FeelMotion rebuild of Feel's FeelDuck example. Every "juice" effect
+    /// (camera shake, squash/stretch, sound, smoke, screen pop, landing wobble) is a FeelMotionAction
+    /// built in code and played through a FeelMotionPlayer, instead of Feel's MMFeedbacks.
     ///
     /// Three players are built once in Awake() and replayed on every trigger — Rewind() before Play()
-    /// forces a clean restart even if a previous play hasn't finished (FeelMotionPlayer's own documented
-    /// pattern for "force restart while already playing").
-    /// </summary>
+    /// forces a clean restart even mid-play.
     [RequireComponent(typeof(Animator), typeof(AudioSource))]
     public sealed class CatRunner : MonoBehaviour
     {
@@ -90,8 +86,7 @@ namespace FeelMotion.Samples
             _jumpPlayer.Play();
         }
 
-        /// <summary>Called by an AnimationEvent on the jump clip at its contact frame — mirrors Duck.cs's
-        /// public Land() hook, which Feel's jump animation calls the same way.</summary>
+        /// Called by an AnimationEvent on the jump clip at its contact frame.
         public void Land()
         {
             _landPlayer.Rewind();

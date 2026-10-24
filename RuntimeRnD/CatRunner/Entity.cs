@@ -13,9 +13,8 @@ namespace FeelMotion.Samples
         EnemyFish,
     }
 
-    /// <summary>Moves left at its own speed from the spawner towards the cat, and gets consumed once
-    /// it's close enough. EnemyFish is the one exception: on consume it swaps to the dead-fish sprite
-    /// and punches away instead of being destroyed immediately.</summary>
+    /// Moves left towards the cat, consumed once close enough. EnemyFish is the exception: on consume
+    /// it swaps to the dead-fish sprite and punches away instead of being destroyed immediately.
     public sealed class Entity : MonoBehaviour
     {
         [SerializeField, Min(0f)] private float _moveSpeed = 1.5f;
@@ -33,8 +32,7 @@ namespace FeelMotion.Samples
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        /// <summary>Called by EntitiesSpawner right after Instantiate — the spawner owns which prefab
-        /// maps to which type, so Entity itself never needs to know its own role until this point.</summary>
+        /// Called by EntitiesSpawner right after Instantiate — the spawner owns the prefab-to-type map.
         public void Initialize(EntityType type, Transform catTransform, Sprite deadFishSprite = null)
         {
             _type = type;

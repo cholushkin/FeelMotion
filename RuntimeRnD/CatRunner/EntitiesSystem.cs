@@ -79,8 +79,7 @@ namespace FeelMotion.Samples
             _jumpPlayer.Play();
         }
 
-        /// <summary>Called by an AnimationEvent on the jump clip at its contact frame — mirrors Duck.cs's
-        /// public Land() hook, which Feel's jump animation calls the same way.</summary>
+        /// Called by an AnimationEvent on the jump clip at its contact frame.
         public void Land()
         {
             _landPlayer.Rewind();

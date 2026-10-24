@@ -3,13 +3,9 @@ using UnityEngine.UIElements;
 
 namespace FeelMotion.Editor;
 
-/// <summary>
-/// A stack of HelpBox messages (error/warning/info) under FeelMotionPlayerEditor's Debug section —
-/// surfaces authoring problems (FeelMotionAction.Validate()) and playback notices (e.g. "this action
-/// loops indefinitely, no progress bar") that would otherwise be silent or log-only. Rebuilds its
-/// children only when the message set actually changes, so the Debug panel's ~50ms poll doesn't
-/// thrash UIElements every tick.
-/// </summary>
+/// Stack of HelpBox messages (error/warning/info) under FeelMotionPlayerEditor's Debug section —
+/// surfaces Validate() problems and playback notices that would otherwise be log-only. Rebuilds
+/// children only when the message set changes, so the ~50ms poll doesn't thrash UIElements every tick.
 sealed class InfoBoxList : VisualElement
 {
     readonly List<(string Message, HelpBoxMessageType Type)> _current = new();

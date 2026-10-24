@@ -4,11 +4,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Plays another FeelMotionPlayer and completes when that player's own playback finishes — lets one
-    /// player kick off another instead of duplicating its action list. Mirrors LitMotion.Animation's
-    /// "Play LitMotion Animation" control component.
-    /// </summary>
+    /// player kick off another instead of duplicating its action list.
     [Serializable]
     [FeelMotionActionMenu("Control/Play FeelMotion Player")]
     public sealed class PlayFeelMotionPlayerAction : FeelMotionAction

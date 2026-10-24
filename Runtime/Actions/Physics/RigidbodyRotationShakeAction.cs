@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>Shake: a damped random vibration added on top of the captured rotation — Settings.EndValue is the shake strength, not a destination. Author with MotionValueMode.FromCurrentTo.</summary>
+    /// Shake adds a damped random vibration on top of the captured rotation — EndValue is the shake
+    /// strength, not a destination. Author with MotionValueMode.FromCurrentTo.
     [Serializable]
     [FeelMotionActionMenu("Rigidbody/Rotation (Shake)")]
     public sealed class RigidbodyRotationShakeAction : Vector3PropertyMotionAction<Rigidbody, ShakeOptions, Vector3ShakeMotionAdapter>

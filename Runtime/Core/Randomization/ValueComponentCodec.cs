@@ -3,14 +3,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// Decomposes a TValue into up to 4 float components and recomposes it — the single bridge that
-    /// lets RandomizationSet apply one generic, non-generic-module randomizer to any supported value
-    /// type (float/int/long/double/Vector2/Vector3/Vector4/Color/Rect) without a per-type randomizer
-    /// class. Mirrors the per-type arithmetic already in PropertyMotionActionBases.cs (Add/Multiply/
-    /// ScaleReach), as a standalone static so it also serves ValueMotionAction, which doesn't derive
-    /// from those bases. See Documentation/Architecture.md's Randomization section.
-    /// </summary>
+    /// Decomposes a TValue into up to 4 float components and recomposes it — lets RandomizationSet
+    /// apply one non-generic module to any supported value type without a per-type randomizer class.
     public interface IValueComponentCodec<TValue> where TValue : unmanaged
     {
         int ComponentCount { get; }
@@ -19,10 +13,9 @@ namespace FeelMotion
         TValue Recompose(ReadOnlySpan<float> components);
     }
 
-    /// <summary>Non-generic companion to ValueComponentCodec&lt;TValue&gt; — for editor code that only
-    /// has a runtime <see cref="Type"/> (not a compile-time TValue), e.g. labeling a Vector3 action's
-    /// randomizer rows "X"/"Y"/"Z". Single source of truth for the per-type component shape, shared by
-    /// both the runtime apply path and the Inspector. Empty for an unsupported type.</summary>
+    /// Non-generic companion to ValueComponentCodec`TValue` — for editor code that only has a runtime
+    /// Type, not a compile-time TValue (e.g. labeling a Vector3 action's rows "X"/"Y"/"Z"). Empty for
+    /// an unsupported type.
     public static class ValueComponentCodec
     {
         public static string[] GetComponentLabels(Type valueType)
@@ -38,10 +31,9 @@ namespace FeelMotion
         }
     }
 
-    /// <summary>Resolves the codec for a closed TValue once per type (a static generic field is
-    /// initialized exactly once per closed generic instantiation by the CLR) — never per Play(), let
-    /// alone per frame. Null for an unsupported TValue (e.g. FixedString*): Start/End Value
-    /// randomization is then unavailable for that action, but Duration/Delay randomization still works.</summary>
+    /// Resolves the codec for a closed TValue once per type (CLR initializes a static generic field
+    /// once per closed instantiation) — never per Play(). Null for an unsupported TValue (e.g.
+    /// FixedString*): Start/End Value randomization is then unavailable, but Duration/Delay still works.
     public static class ValueComponentCodec<TValue> where TValue : unmanaged
     {
         public static readonly IValueComponentCodec<TValue> Instance = Resolve();

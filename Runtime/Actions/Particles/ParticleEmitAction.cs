@@ -4,11 +4,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// Emits particles (or restarts playback) on a ParticleSystem — not a tween. Missing from
-    /// LitMotion.Animation entirely (it has no particle support); implemented here because juice
-    /// sequences commonly want a particle burst at a specific point (e.g. a landing smoke puff).
-    /// </summary>
+    /// Emits particles (or restarts playback) on a ParticleSystem — not a tween. LitMotion.Animation has
+    /// no particle support; implemented here so juice sequences can fire a burst at a specific point.
     [Serializable]
     [FeelMotionActionMenu("Particles/Emit")]
     public sealed class ParticleEmitAction : FeelMotionAction
@@ -19,7 +16,6 @@ namespace FeelMotion
         [SerializeField] Mode _mode = Mode.Emit;
         [SerializeField, Min(0)] int _emitCount = 1;
 
-        /// <summary>Configures this action to emit <paramref name="emitCount"/> particles on <paramref name="target"/>.</summary>
         public ParticleEmitAction Configure(ParticleSystem target, int emitCount)
         {
             _target = target;

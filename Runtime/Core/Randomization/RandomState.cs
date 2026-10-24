@@ -1,25 +1,22 @@
 namespace FeelMotion;
 
-/// <summary>
-/// Small deterministic RNG stream, independent of UnityEngine.Random's global state — so a seeded
-/// FeelMotionRandomizer always produces the same sequence regardless of what else calls
-/// UnityEngine.Random the same frame, and so two randomizers on the same action never perturb each
-/// other's sequence. xorshift32 — not cryptographic, fine for authoring-time value variation.
-/// </summary>
+/// Small deterministic RNG stream, independent of UnityEngine.Random's global state, so a seeded
+/// FeelMotionRandomizer always produces the same sequence and two randomizers never perturb each
+/// other. xorshift32 — not cryptographic, fine for authoring-time value variation.
 public struct RandomState
 {
     uint _state;
 
     RandomState(uint state) => _state = state;
 
-    /// <summary>Deterministic stream from a user-authored seed.</summary>
+    /// Deterministic stream from a user-authored seed.
     public static RandomState FromSeed(int seed)
     {
         var state = unchecked((uint)seed);
         return new RandomState(state == 0 ? 0x9E3779B9u : state); // 0 would never advance under xorshift
     }
 
-    /// <summary>Non-deterministic stream — a fresh sequence every Play().</summary>
+    /// Non-deterministic stream — a fresh sequence every Play().
     public static RandomState NonDeterministic()
     {
         var state = unchecked((uint)System.Environment.TickCount) ^ 0x9E3779B9u;
@@ -36,9 +33,9 @@ public struct RandomState
         return x;
     }
 
-    /// <summary>Uniform float in [0, 1).</summary>
+    /// Uniform float in [0, 1).
     public float NextFloat01() => (NextUInt() & 0x00FFFFFFu) / (float)0x01000000u;
 
-    /// <summary>Uniform float in [min, max]. Returns min unchanged when max &lt;= min.</summary>
+    /// Uniform float in [min, max]. Returns min unchanged when max is not greater than min.
     public float NextFloat(float min, float max) => max <= min ? min : min + (max - min) * NextFloat01();
 }

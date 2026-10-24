@@ -2,9 +2,9 @@ using UnityEngine;
 
 namespace FeelMotion.Samples
 {
-    /// <summary>Auto-spawns entities at their own rate and lets the HUD's buttons force an extra spawn
-    /// of a specific type. Spawn position is randomized within _spawnerRadius around this transform so
-    /// entities don't all enter on the exact same line.</summary>
+    /// Auto-spawns entities at their own rate; the HUD's buttons can force an extra spawn of a specific
+    /// type. Spawn position is randomized within _spawnerRadius so entities don't all enter on the
+    /// same line.
     public sealed class EntitiesSpawner : MonoBehaviour
     {
         [SerializeField] private float _spawnerRadius = 1f;
@@ -31,8 +31,7 @@ namespace FeelMotion.Samples
 
         void Awake()
         {
-            // EnemyDeadFish is never spawned on its own — Entity just borrows its sprite when an
-            // EnemyFish gets hit, so we grab it once instead of keeping a second live prefab reference around.
+            // EnemyDeadFish is never spawned on its own — Entity just borrows its sprite on hit.
             if (_entityDeadEnemyFishPrefab != null)
             {
                 var deadSpriteRenderer = _entityDeadEnemyFishPrefab.GetComponent<SpriteRenderer>();
@@ -59,8 +58,7 @@ namespace FeelMotion.Samples
             SpawnEntity(type);
         }
 
-        /// <summary>Called by the HUD once lives run out — auto-spawning stops, forced spawns from the
-        /// buttons still work.</summary>
+        /// Called by the HUD once lives run out — forced spawns from the buttons still work.
         public void StopSpawning() => _isSpawningEnabled = false;
 
         public void ForceSpawnCoin() => SpawnEntity(EntityType.Coin);

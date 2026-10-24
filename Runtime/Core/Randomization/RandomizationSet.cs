@@ -3,18 +3,11 @@ using System.Collections.Generic;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Per-Play() aggregation of one action's enabled FeelMotionRandomizer modules — owns one
-    /// RandomState per module (seeded or not, created once here) and, for OncePerPlay modules, the
-    /// first-drawn sample, so every subsequent managed-loop iteration reuses those same numbers instead
-    /// of re-rolling. Never shared across Play() calls: created fresh by whichever
-    /// IMotionActionRuntime.Play() owns it, mirroring every other runtime-only state in this package
-    /// (Documentation/Architecture.md §2). Internal — callers only need CreateOrNull/ApplyValue/
-    /// ApplyScalar/HasPerLoopRandomization. Public (not internal) because it's shared across assembly
-    /// boundaries: PropertyMotionAction lives in FeelMotion.asmdef, but ValueMotionAction — which also
-    /// needs this — lives in the separate FeelMotion.Value.asmdef (Architecture.md §9), which only
-    /// references FeelMotion, not the other way around.
-    /// </summary>
+    /// RandomState per module and, for OncePerPlay modules, the first-drawn sample, so later
+    /// managed-loop iterations reuse the same numbers instead of re-rolling. Created fresh by whichever
+    /// IMotionActionRuntime.Play() owns it, never shared across Play() calls. Public because both
+    /// PropertyMotionAction and ValueMotionAction (separate asmdefs) need it.
     public sealed class RandomizationSet
     {
         sealed class ModuleState
@@ -30,9 +23,8 @@ namespace FeelMotion
 
         readonly List<ModuleState> _modules;
 
-        /// <summary>True when any enabled module uses EveryLoop — drives FeelMotionAction.
-        /// RequiresManagedLoop, checked by the action itself before any RandomizationSet exists; kept
-        /// here too for the runtime's own convenience once it has built one.</summary>
+        /// True when any enabled module uses EveryLoop. Mirrors FeelMotionAction.RequiresManagedLoop,
+        /// kept here too for convenience once a RandomizationSet already exists.
         public bool HasPerLoopRandomization { get; }
 
         public static RandomizationSet CreateOrNull(IReadOnlyList<FeelMotionRandomizer> randomizers)
@@ -60,10 +52,9 @@ namespace FeelMotion
             }
         }
 
-        /// <summary>Applies every enabled module targeting <paramref name="parameter"/> to
-        /// <paramref name="baseValue"/>, in authoring order (a later module composes on top of an
-        /// earlier one's result). Returns <paramref name="baseValue"/> unchanged for a TValue the
-        /// component codec doesn't support (e.g. FixedString*).</summary>
+        /// Applies every enabled module targeting `parameter` to `baseValue`, in authoring order (a
+        /// later module composes on top of an earlier one's result). Unchanged for a TValue the
+        /// component codec doesn't support (e.g. FixedString*).
         public TValue ApplyValue<TValue>(RandomizedParameter parameter, in TValue baseValue) where TValue : unmanaged
         {
             var codec = ValueComponentCodec<TValue>.Instance;
@@ -81,7 +72,7 @@ namespace FeelMotion
             return codec.Recompose(components);
         }
 
-        /// <summary>Same as ApplyValue, for the always-scalar Duration/Delay parameters.</summary>
+        /// Same as ApplyValue, for the always-scalar Duration/Delay parameters.
         public float ApplyScalar(RandomizedParameter parameter, float baseValue)
         {
             Span<float> components = stackalloc float[1];
@@ -116,10 +107,9 @@ namespace FeelMotion
             }
         }
 
-        /// <summary>OncePerPlay: draws once, caches, and reuses forever after on this RandomizationSet.
-        /// EveryLoop: draws a fresh sample on every call. Only the enabled components actually consume
-        /// a draw from the module's RandomState — a disabled component's slot stays 0 and is never read
-        /// (Apply skips it above), so toggling components on/off doesn't shift other components' draws.</summary>
+        /// OncePerPlay: draws once, caches, reuses forever on this RandomizationSet. EveryLoop: fresh
+        /// sample every call. Only enabled components consume a draw, so toggling one on/off doesn't
+        /// shift other components' draws.
         static float[] GetOrDrawSample(ModuleState state, int componentCount)
         {
             if (state.Module.Policy == RandomizationSamplingPolicy.OncePerPlay && state.CachedSample != null)

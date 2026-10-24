@@ -2,7 +2,7 @@ using System;
 
 namespace FeelMotion;
 
-/// <summary>Flat probability across [min, max] — every value in range is equally likely.</summary>
+/// Flat probability across [min, max] — every value in range is equally likely.
 [Serializable]
 public sealed class UniformDistribution : IRandomDistribution
 {

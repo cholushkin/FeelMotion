@@ -4,15 +4,11 @@ using UnityEngine.UIElements;
 
 namespace FeelMotion.Editor;
 
-/// <summary>
-/// One action's row in FeelMotionPlayerEditor: a Foldout (triangle) with an icon, a bold "enabled"
-/// Toggle used as the row's name label, a live progress bar, and a context-menu button — composed
-/// so the triangle, the checkbox and the context menu each have their own, non-overlapping pickable
-/// region. Modeled on LitMotion.Animation's AnimationComponentView (reimplemented, not copied) —
-/// see Documentation/Architecture.md. That composition is what fixes the IMGUI editor's foldout-vs-
-/// checkbox hit-test bug: Foldout's own triangle/header keeps driving expand/collapse, while only the
-/// enabled Toggle's checkmark glyph is pickable, so the two controls never fight over the same click.
-/// </summary>
+/// One action's row in FeelMotionPlayerEditor: a Foldout with an icon, a bold "enabled" Toggle used as
+/// the row's name label, a live progress bar, and a context-menu button — each with its own,
+/// non-overlapping pickable region. This fixes the old IMGUI editor's foldout-vs-checkbox hit-test
+/// bug: the Foldout's triangle/header keeps driving expand/collapse, while only the Toggle's checkmark
+/// glyph is pickable, so the two controls never fight over the same click.
 public sealed class ActionRowView : VisualElement
 {
     VisualElement _container;
@@ -28,9 +24,8 @@ public sealed class ActionRowView : VisualElement
     public VisualElement ContextMenuButton => _contextMenuButton;
     public VisualElement PreviewButton => _previewButton;
 
-    /// <summary>True while a standalone per-action preview (FeelMotionPlayerEditor.TogglePreview) is
-    /// driving this row's progress bar — the full-session live-progress poll skips the row while this
-    /// is set, so the two updaters never fight over the same bar.</summary>
+    /// True while a standalone per-action preview (FeelMotionPlayerEditor.TogglePreview) drives this
+    /// row's progress bar — the session-wide poll skips the row while this is set.
     public bool IsPreviewing { get; set; }
 
     public override VisualElement contentContainer => _container;
@@ -52,8 +47,7 @@ public sealed class ActionRowView : VisualElement
         set => _icon.style.backgroundImage = value;
     }
 
-    /// <summary>Progress-fill color — set to a distinct color for a looping action so its row stands
-    /// out from a one-shot tween's. Defaults to white.</summary>
+    /// Progress-fill color — distinct per looping action so its row stands out from a one-shot tween's.
     public Color ProgressColor
     {
         set => _progressFill.style.backgroundColor = value;

@@ -10,8 +10,8 @@ namespace FeelMotion
     [Serializable]
     public sealed class StringChangedEvent : UnityEvent<string> { }
 
-    /// <summary>Tweens text character-by-character (LitMotion's FixedString512Bytes string motion) and
-    /// broadcasts the result as a plain string.</summary>
+    /// Tweens text character-by-character (LitMotion's FixedString512Bytes string motion) and
+    /// broadcasts the result as a plain string.
     [Serializable]
     [FeelMotionActionMenu("Value/String")]
     public sealed class StringValueAction : ValueMotionAction<FixedString512Bytes, StringOptions, FixedString512BytesMotionAdapter>

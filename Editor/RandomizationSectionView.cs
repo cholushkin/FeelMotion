@@ -7,24 +7,13 @@ using UnityEngine.UIElements;
 
 namespace FeelMotion.Editor;
 
-/// <summary>
-/// Renders a FeelMotionAction's "Randomization" block: a collapsible Foldout listing each
-/// FeelMotionRandomizer module (enabled toggle, target parameter, mode, sampling policy, optional
-/// seed, distribution, per-component enable+range rows) plus an "Add Randomizer..." button. Styled to
-/// match MotionSettingsView's grouped-Box layout. See Documentation/Architecture.md's Randomization
-/// section for the module model this renders.
-/// </summary>
+/// Renders a FeelMotionAction's "Randomization" block: the randomizer list plus an "Add Randomizer..."
+/// menu. See Documentation/Architecture.md §12.
 static class RandomizationSectionView
 {
-    /// <summary>Walks the action's type hierarchy to find the closed TValue it tweens — the generic
-    /// argument of PropertyMotionAction&lt;TObject,TValue,TOptions,TAdapter&gt; (FeelMotion.asmdef) or
-    /// ValueMotionAction&lt;TValue,TOptions,TAdapter&gt; (the separate FeelMotion.Value.asmdef,
-    /// Architecture.md §9) — so the Randomization section can label Start/End Value component rows
-    /// (X/Y/Z, R/G/B/A, ...) and know whether those two parameters are even available. ValueMotionAction
-    /// is matched by name/namespace rather than typeof(ValueMotionAction&lt;,,&gt;): FeelMotion.Editor
-    /// deliberately doesn't reference FeelMotion.Value (or any other optional action category), the
-    /// same isolation every other category's asmdef relies on. Returns null for an action with no value
-    /// settings (e.g. a Control action).</summary>
+    /// Finds the TValue closed over by PropertyMotionAction/ValueMotionAction (for Start/End Value
+    /// component labels). Matched by name since FeelMotion.Editor doesn't reference FeelMotion.Value.
+    /// Null if the action has no value settings.
     public static Type GetValueType(Type actionType)
     {
         for (var t = actionType; t != null; t = t.BaseType)
@@ -75,10 +64,7 @@ static class RandomizationSectionView
         addButton.clicked += () => ShowAddMenu(randomizersProperty, valueType, Rebuild);
         foldout.Add(addButton);
 
-        // A module's Parameter also changes how many component rows it needs (e.g. switching Start
-        // Value on a Vector3 action from Duration), so the rebuild signature tracks both array size and
-        // every element's Parameter — matches the array-size polling idiom already used by
-        // FeelMotionPlayerEditor.RefreshIfArraySizeChanged.
+        // Signature also tracks each element's Parameter: changing it changes how many component rows render.
         container.schedule.Execute(() =>
         {
             var current = Signature(randomizersProperty);
@@ -122,14 +108,13 @@ static class RandomizationSectionView
         headerRow.Add(new PropertyField(parameterProperty, "") { style = { flexGrow = 1f } });
 
         var removeButton = new Button { text = "✕", tooltip = "Remove this randomizer", style = { width = 20f } };
-        removeButton.clicked += () =>
-        {
-            randomizersProperty.DeleteArrayElementAtIndex(index);
-            randomizersProperty.serializedObject.ApplyModifiedProperties();
-            rebuildSection();
-        };
+        removeButton.clicked += () => RemoveRandomizer(randomizersProperty, index, rebuildSection);
         headerRow.Add(removeButton);
         box.Add(headerRow);
+
+        // Reactive, not during Build: growing/applying _components while the row itself is under
+        // construction left bound PropertyFields broken until the object was deselected and reselected.
+        box.TrackPropertyValue(parameterProperty, p => OnParameterChanged(p, componentsProperty, valueType, rebuildSection));
 
         box.Add(new PropertyField(modeProperty));
         box.Add(new PropertyField(policyProperty));
@@ -146,10 +131,13 @@ static class RandomizationSectionView
 
         var parameter = (RandomizedParameter)parameterProperty.enumValueIndex;
         var labels = ComponentLabelsFor(parameter, valueType);
-        EnsureComponentCount(componentsProperty, labels.Length);
+
+        // Clamped defensively: an Undo/Redo step can momentarily leave the parameter and _components
+        // out of sync (they're applied as separate undo records).
+        var count = Math.Min(labels.Length, componentsProperty.arraySize);
 
         var componentsBox = new VisualElement { style = { marginTop = 2f } };
-        for (var i = 0; i < labels.Length; i++)
+        for (var i = 0; i < count; i++)
             componentsBox.Add(BuildComponentRow(componentsProperty, i, labels[i]));
         box.Add(componentsBox);
 
@@ -171,9 +159,8 @@ static class RandomizationSectionView
         return row;
     }
 
-    /// <summary>Duration/Delay are always one plain scalar; Start/End Value are shaped by the action's
-    /// own TValue (via ValueComponentCodec's labels) — empty when valueType is null/unsupported, which
-    /// also keeps ShowAddMenu from ever offering Start/End Value in that case.</summary>
+    /// Duration/Delay are one plain scalar; Start/End Value are shaped by the action's TValue. Empty
+    /// when valueType is null, which also keeps ShowAddMenu from offering Start/End Value then.
     static string[] ComponentLabelsFor(RandomizedParameter parameter, Type valueType) => parameter switch
     {
         RandomizedParameter.Duration => new[] { "Duration" },
@@ -181,10 +168,10 @@ static class RandomizationSectionView
         _ => valueType == null ? Array.Empty<string>() : ValueComponentCodec.GetComponentLabels(valueType)
     };
 
-    /// <summary>Grows _components to <paramref name="required"/> entries, leaving any already-present
-    /// entries untouched (so switching Start Value on a Vector2 action to a Vector3 one keeps X/Y as
-    /// authored and only adds a fresh, enabled Z) — never shrinks, since a leftover entry beyond what
-    /// the current parameter needs is simply ignored by RandomizationSet.</summary>
+    /// Grows _components to `required` entries, keeping existing ones (switching Start Value from a
+    /// Vector2 action to Vector3 keeps authored X/Y, adds a fresh Z) and never shrinking — a leftover
+    /// entry beyond what the current parameter needs is simply ignored by RandomizationSet. Pure data
+    /// mutation; callers apply.
     static void EnsureComponentCount(SerializedProperty componentsProperty, int required)
     {
         if (componentsProperty.arraySize >= required) return;
@@ -198,8 +185,21 @@ static class RandomizationSectionView
             element.FindPropertyRelative("Min").floatValue = -1f;
             element.FindPropertyRelative("Max").floatValue = 1f;
         }
+    }
 
+    static void OnParameterChanged(SerializedProperty parameterProperty, SerializedProperty componentsProperty, Type valueType, Action rebuildSection)
+    {
+        var parameter = (RandomizedParameter)parameterProperty.enumValueIndex;
+        EnsureComponentCount(componentsProperty, ComponentLabelsFor(parameter, valueType).Length);
         componentsProperty.serializedObject.ApplyModifiedProperties();
+        rebuildSection();
+    }
+
+    static void RemoveRandomizer(SerializedProperty randomizersProperty, int index, Action rebuildSection)
+    {
+        randomizersProperty.DeleteArrayElementAtIndex(index);
+        randomizersProperty.serializedObject.ApplyModifiedProperties();
+        rebuildSection();
     }
 
     static void ShowAddMenu(SerializedProperty randomizersProperty, Type valueType, Action rebuildSection)

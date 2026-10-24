@@ -5,7 +5,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>Punch: a damped rotational vibration added on top of the captured rotation — Settings.EndValue is the punch strength, not a destination. Author with MotionValueMode.FromCurrentTo.</summary>
+    /// Punch adds a damped rotational vibration on top of the captured rotation — EndValue is the
+    /// punch strength, not a destination. Author with MotionValueMode.FromCurrentTo.
     [Serializable]
     [FeelMotionActionMenu("Transform/Rotation (Punch)")]
     public sealed class TransformRotationPunchAction : Vector3PropertyMotionAction<Transform, PunchOptions, Vector3PunchMotionAdapter>

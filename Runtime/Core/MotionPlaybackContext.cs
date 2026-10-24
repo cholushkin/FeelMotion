@@ -2,11 +2,9 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Global playback knobs set on FeelMotionPlayer and threaded into every action's runtime at
     /// CreateRuntime() time — mirrors Feel's MMF_Player.DurationMultiplier/FeedbacksIntensity. See
     /// Documentation/Architecture.md.
-    /// </summary>
     public readonly struct MotionPlaybackContext
     {
         const float MinDurationMultiplier = 0.0001f;

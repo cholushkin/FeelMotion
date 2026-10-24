@@ -2,11 +2,9 @@ using System;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Categorizes a FeelMotionAction subclass in the Editor's searchable Add Action menu, e.g.
-    /// [FeelMotionActionMenu("Transform/Position")]. No other registration step is needed — the
-    /// Editor discovers every non-abstract subclass via TypeCache. See Documentation/ExtensionGuide.md.
-    /// </summary>
+    /// [FeelMotionActionMenu("Transform/Position")]. No other registration step is needed — the Editor
+    /// discovers every non-abstract subclass via TypeCache. See Documentation/ExtensionGuide.md.
     [AttributeUsage(AttributeTargets.Class)]
     public sealed class FeelMotionActionMenuAttribute : Attribute
     {

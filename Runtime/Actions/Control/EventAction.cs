@@ -5,11 +5,8 @@ using UnityEngine.Events;
 
 namespace FeelMotion
 {
-    /// <summary>
     /// Fires UnityEvents instead of tweening anything. Completes immediately but still produces a
-    /// MotionHandle, so it sequences alongside real tweens with no special-casing — see
-    /// Documentation/Architecture.md §4.
-    /// </summary>
+    /// MotionHandle, so it sequences alongside real tweens with no special-casing.
     [Serializable]
     [FeelMotionActionMenu("Control/Event")]
     public sealed class EventAction : FeelMotionAction

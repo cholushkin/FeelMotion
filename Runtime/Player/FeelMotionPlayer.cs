@@ -6,17 +6,14 @@ using UnityEngine.Events;
 
 namespace FeelMotion
 {
-    /// <summary>
-    /// Main entry point: configure and play a sequence of FeelMotionActions from the Inspector.
-    /// Every Play() call creates a fresh MotionPlayerSession — nothing here holds a MotionHandle or
-    /// a captured value directly. See Documentation/Architecture.md §1, §4.
+    /// Main entry point: configure and play a sequence of FeelMotionActions from the Inspector. Every
+    /// Play() call creates a fresh MotionPlayerSession — nothing here holds a MotionHandle or a
+    /// captured value directly. See Documentation/Architecture.md §1, §4.
     ///
     /// Deliberately does not implement IMotionActionRunner: that interface's generic Resume()/
-    /// Stop(MotionStopMode) shape is for individual action runtimes (still used that way by
-    /// PropertyMotionActionRuntime, DelayAction, EventAction) — the player's own public surface is the
-    /// cleaner Play/Pause/Rewind/Drop set below. A forced restart while already playing is just
-    /// Rewind() + Play() — no separate method needed.
-    /// </summary>
+    /// Stop(MotionStopMode) shape is for individual action runtimes (PropertyMotionActionRuntime,
+    /// DelayAction, EventAction) — the player's own surface is the Play/Pause/Rewind/Drop set below. A
+    /// forced restart while already playing is just Rewind() + Play(), no separate method needed.
     [AddComponentMenu("FeelMotion/FeelMotion Player")]
     public sealed class FeelMotionPlayer : MonoBehaviour
     {
@@ -40,16 +37,16 @@ namespace FeelMotion
 
         public IReadOnlyList<FeelMotionAction> Actions => _actions;
 
-        /// <summary>User-settable name for this whole animation effect — e.g. "Hit Flash", shown in the
+        /// User-settable name for this whole animation effect — e.g. "Hit Flash", shown in the
         /// Inspector. Mirrors the per-action label (FeelMotionAction.DisplayName); purely for authoring
-        /// clarity, never read by playback logic.</summary>
+        /// clarity, never read by playback logic.
         public string Label
         {
             get => _label;
             set => _label = value;
         }
 
-        /// <summary>Replaces the action list from code — e.g. a procedurally built sequence, or a test.</summary>
+        /// Replaces the action list from code — e.g. a procedurally built sequence, or a test.
         public void SetActions(IReadOnlyList<FeelMotionAction> actions)
         {
             if (actions == null)
@@ -75,16 +72,16 @@ namespace FeelMotion
             set => _sequenceDelay = Mathf.Max(0f, value);
         }
 
-        /// <summary>Global multiplier applied to every action's duration/delay this player plays —
-        /// mirrors Feel's MMF_Player.DurationMultiplier. 1 (default) changes nothing.</summary>
+        /// Global multiplier applied to every action's duration/delay this player plays — mirrors
+        /// Feel's MMF_Player.DurationMultiplier. 1 (default) changes nothing.
         public float DurationMultiplier
         {
             get => _durationMultiplier;
             set => _durationMultiplier = Mathf.Max(0f, value);
         }
 
-        /// <summary>Global multiplier applied to how far every action's value travels — mirrors Feel's
-        /// MMF_Player.FeedbacksIntensity. 1 (default) changes nothing, 0 means no motion.</summary>
+        /// Global multiplier applied to how far every action's value travels — mirrors Feel's
+        /// MMF_Player.FeedbacksIntensity. 1 (default) changes nothing, 0 means no motion.
         public float IntensityMultiplier
         {
             get => _intensityMultiplier;
@@ -97,10 +94,9 @@ namespace FeelMotion
 
         public float Progress => _session?.Progress ?? 0f;
 
-        /// <summary>0-1 progress of one action in the currently playing/paused session — lets the
-        /// Inspector fill each action row's own progress bar while the whole player is playing, not
-        /// just during a standalone per-action preview. 0 if idle or the action isn't part of the
-        /// current session (disabled/invalid).</summary>
+        /// 0-1 progress of one action in the currently playing/paused session — lets the Inspector fill
+        /// each action row's own progress bar while the whole player is playing, not just during a
+        /// standalone per-action preview. 0 if idle or the action isn't part of the current session.
         public float GetActionProgress(FeelMotionAction action) => _session?.GetActionProgress(action) ?? 0f;
 
         public event Action Played;
@@ -109,8 +105,8 @@ namespace FeelMotion
         public event Action Stopped;
         public event Action Completed;
 
-        /// <summary>Fired when a single action throws during Play()/validation. The session skips the
-        /// offending action and keeps going — see Documentation/Architecture.md §7.</summary>
+        /// Fired when a single action throws during Play()/validation. The session skips the offending
+        /// action and keeps going — see Documentation/Architecture.md §7.
         public event Action<FeelMotionAction, Exception> ActionError;
 
         void OnEnable()
@@ -135,8 +131,8 @@ namespace FeelMotion
             Drop();
         }
 
-        /// <summary>Starts from the beginning if idle/completed, resumes if paused, or does nothing if
-        /// already playing — merges the old separate Play()/Resume() into one entry point.</summary>
+        /// Starts from the beginning if idle/completed, resumes if paused, or does nothing if already
+        /// playing — merges the old separate Play()/Resume() into one entry point.
         public void Play()
         {
             if (_session != null)
@@ -159,16 +155,15 @@ namespace FeelMotion
             _onPlay?.Invoke();
         }
 
-        /// <summary>Freezes time in place — the running session can be resumed later with Play().</summary>
+        /// Freezes time in place — the running session can be resumed later with Play().
         public void Pause()
         {
             _session?.Pause();
             Paused?.Invoke();
         }
 
-        /// <summary>Stops playing and writes each action's captured initial value back — the opposite
-        /// of Drop(). Named Rewind rather than Reset to avoid colliding with Unity's own
-        /// MonoBehaviour.Reset() Editor message.</summary>
+        /// Stops playing and writes each action's captured initial value back — the opposite of Drop().
+        /// Named Rewind rather than Reset to avoid colliding with Unity's own MonoBehaviour.Reset() Editor message.
         public void Rewind()
         {
             if (_session == null) return;
@@ -177,8 +172,8 @@ namespace FeelMotion
             _onStop?.Invoke();
         }
 
-        /// <summary>Stops animating and releases the property holds — leaves every value exactly where
-        /// it was, unlike Rewind().</summary>
+        /// Stops animating and releases the property holds — leaves every value exactly where it was,
+        /// unlike Rewind().
         public void Drop()
         {
             if (_session == null) return;
@@ -187,7 +182,7 @@ namespace FeelMotion
             _onStop?.Invoke();
         }
 
-        /// <summary>Awaitable sugar over Play() for callers that want async/await ergonomics.</summary>
+        /// Awaitable sugar over Play() for callers that want async/await ergonomics.
         public UniTask PlayAsync()
         {
             var tcs = new UniTaskCompletionSource();

@@ -6,7 +6,8 @@ using UnityEngine;
 
 namespace FeelMotion
 {
-    /// <summary>Shake: a damped random vibration added on top of the captured position — Settings.EndValue is the shake strength, not a destination. Author with MotionValueMode.FromCurrentTo.</summary>
+    /// Shake adds a damped random vibration on top of the captured position — EndValue is the shake
+    /// strength, not a destination. Author with MotionValueMode.FromCurrentTo.
     [Serializable]
     [FeelMotionActionMenu("Rigidbody2D/Position (Shake)")]
     public sealed class Rigidbody2DPositionShakeAction : Vector2PropertyMotionAction<Rigidbody2D, ShakeOptions, Vector2ShakeMotionAdapter>

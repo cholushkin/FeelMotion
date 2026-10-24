@@ -11,7 +11,6 @@ namespace FeelMotion
     {
         [SerializeField] string _propertyName = "";
 
-        /// <summary>Name of the shader vector property to animate.</summary>
         public string PropertyName => _propertyName;
 
         public override string Validate() => Target != null && !Target.HasProperty(_propertyName)

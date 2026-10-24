@@ -9,26 +9,19 @@ using UnityEngine.UIElements;
 
 namespace FeelMotion.Editor;
 
-/// <summary>
-/// Custom Inspector for FeelMotionPlayer: searchable Add Action menu, per-action enable/remove/move/
-/// duplicate/preview, and Play/Pause/Rewind/Drop debug controls. Built with UIElements
-/// (CreateInspectorGUI), porting the row composition proven by LitMotion.Animation's own editor
-/// (reimplemented, not copied) — see Documentation/Architecture.md and ActionRowView's own doc comment
-/// for why this replaced the previous IMGUI implementation (foldout/checkbox hit-test bug).
-/// </summary>
+/// Custom Inspector for FeelMotionPlayer: Add Action menu, per-action enable/remove/move/duplicate/
+/// preview, and Play/Pause/Rewind/Drop debug controls. UIElements-based — see ActionRowView's own
+/// doc comment for why this replaced the old IMGUI implementation.
 [CustomEditor(typeof(FeelMotionPlayer))]
 public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
 {
     SerializedProperty _actionsProperty;
     int _prevArraySize;
 
-    /// <summary>Orange — used by both the per-action and the common progress bar whenever the thing
-    /// they represent has no final duration (an infinitely-looping action, or a session that contains
-    /// one).</summary>
+    /// Progress bar color when the action/session has no final duration (infinite loop).
     static readonly Color InfiniteProgressColor = new(1f, 0.65f, 0f);
 
-    /// <summary>Blue, matching CaptionDurationColor below — used whenever the represented length is
-    /// predictable/finite (a one-shot or finitely-looping action, or a session with no infinite action).</summary>
+    /// Progress bar color when the represented length is finite.
     static readonly Color FiniteProgressColor = new(0.435f, 0.659f, 0.863f);
 
     const string CaptionDurationColor = "#6FA8DC";
@@ -175,9 +168,8 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
         RebuildActionsPanel();
     }
 
-    /// <summary>After any growth of the SerializeReference array (Undo/Redo, paste), make sure no two
-    /// elements alias the same managed object — same defensive pass LitMotion.Animation's editor runs
-    /// after its own component list grows.</summary>
+    /// After the SerializeReference array grows (Undo/Redo, paste), clone any element aliasing
+    /// another's managed object — mirrors the defensive pass LitMotion.Animation's editor runs.
     void DeduplicateManagedReferences()
     {
         var seen = new HashSet<object>();
@@ -263,10 +255,8 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             if (action != null) _liveRows.Add((row, action, ResolveLabel));
 
             RefreshCaptionAndColor();
-            // Duration/looping come from several possible nested settings fields depending on the
-            // concrete action type (a tween's SerializableMotionSettings, DelayAction's own duration,
-            // ActionSettings.StartDelay, ...) — a periodic refresh covers all of them generically
-            // instead of tracking each action type's specific fields one by one.
+            // Duration/looping live in different nested fields depending on action type — a periodic
+            // refresh covers all of them generically instead of tracking each type's fields individually.
             row.schedule.Execute(RefreshCaptionAndColor).Every(150);
 
             row.EnabledToggle.BindProperty(enabledProperty);
@@ -291,20 +281,15 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
                 isFirst = false;
                 if (elementProperty.name is "_enabled" or "_displayName" or "_actionSettings" or "_randomizers") continue;
 
-                // "_settings" is PropertyMotionAction's/ValueMotionAction's own LitMotion
-                // SerializableMotionSettings field — render it ourselves (MotionSettingsView) instead
-                // of LitMotion's default drawer so the ease cheatsheet button/always-visible curve
-                // apply consistently wherever a concrete action happens to have one.
+                // "_settings" is the action's LitMotion SerializableMotionSettings field — rendered via
+                // MotionSettingsView instead of LitMotion's default drawer for a consistent ease/curve UI.
                 row.Add(elementProperty.name == "_settings"
                     ? MotionSettingsView.Build(elementProperty.Copy(), "Motion")
                     : new PropertyField(elementProperty, elementProperty.displayName));
             }
 
-            // Only a PropertyMotionAction/ValueMotionAction (both carry _settings) actually resolves
-            // Randomizers at runtime (Documentation/Architecture.md §12) — a Control action (Delay,
-            // Event, Play FeelMotion Player) technically has the serialized list too (it's on the
-            // FeelMotionAction base), but showing "Add Randomizer..." there would be a silent no-op, so
-            // the section only renders where it would actually do something.
+            // Only PropertyMotionAction/ValueMotionAction resolve Randomizers at runtime (Architecture.md
+            // §12); a Control action has the serialized list too but would make "Add Randomizer..." a silent no-op.
             if (randomizersProperty != null && settingsProperty != null)
                 row.Add(RandomizationSectionView.Build(randomizersProperty, RandomizationSectionView.GetValueType(actionType)));
 
@@ -487,9 +472,8 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
             stateLabel.text = $"State: {player.State}";
             progressBar.value = player.Progress;
 
-            // Orange when at least one enabled action loops infinitely — the session then has no final
-            // duration (Sequential's master handle never completes; Parallel's average never settles),
-            // so the bar's own 0-1 reading stops being a meaningful "time left". Blue otherwise.
+            // Orange when any enabled action loops infinitely — the session then has no final duration,
+            // so the bar's 0-1 reading isn't a meaningful "time left". Blue otherwise.
             var hasInfiniteAction = false;
             foreach (var action in player.Actions)
             {
@@ -509,11 +493,10 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
                 if (sessionActive) row.Progress = player.GetActionProgress(action);
                 else if (_wasSessionActive)
                 {
-                    // Mirror the player's own common bar (MotionPlayerSession.Progress), which stays at
-                    // its filled value after a natural Completed finish and only clears on the explicit
-                    // Playing/Paused -> Idle transition (Rewind/Drop) — previously this zeroed every row
-                    // unconditionally on any Playing/Paused exit, fighting a just-finished action's own
-                    // 1f with a reset the very next tick.
+                    // Mirrors MotionPlayerSession.Progress: stays filled after a natural Completed finish,
+                    // clears only on the explicit Playing/Paused -> Idle transition (Rewind/Drop).
+                    // Previously zeroed every row on any Playing/Paused exit, fighting a just-finished
+                    // action's own 1f on the very next tick.
                     row.Progress = player.State == MotionPlayerState.Completed
                         ? player.GetActionProgress(action)
                         : 0f;

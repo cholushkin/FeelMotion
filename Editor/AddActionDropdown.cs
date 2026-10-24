@@ -6,12 +6,9 @@ using UnityEditor.IMGUI.Controls;
 
 namespace FeelMotion.Editor
 {
-    /// <summary>
-    /// Searchable, categorized "Add Action" menu. Modeled directly on LitMotion.Animation's own
-    /// AddAnimationComponentDropdown (reimplemented, not copied — see Documentation/Architecture.md).
-    /// Discovers every non-abstract FeelMotionAction subclass in the project via TypeCache; a new
-    /// action type needs nothing more than a [FeelMotionActionMenu] attribute to show up here.
-    /// </summary>
+    /// Searchable, categorized "Add Action" menu. Discovers every non-abstract FeelMotionAction
+    /// subclass via TypeCache; a new action type needs nothing more than a [FeelMotionActionMenu]
+    /// attribute to show up here.
     public sealed class AddActionDropdown : AdvancedDropdown
     {
         sealed class Item : AdvancedDropdownItem
