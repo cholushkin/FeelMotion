@@ -104,3 +104,4 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f83c147d6af9b8d4685f754b5c1d2398, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FeelMotion.Samples::FeelMotion.Samples.Entity
+  _moveSpeed: 1.1

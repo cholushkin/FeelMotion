@@ -7,7 +7,9 @@
         "FeelMotion.Rendering",
         "LitMotion",
         "Unity.InputSystem",
-        "Unity.RenderPipelines.Core.Runtime"
+        "Unity.RenderPipelines.Core.Runtime",
+        "Unity.TextMeshPro",
+        "UnityEngine.UI"
     ],
     "includePlatforms": [],
     "excludePlatforms": [],
