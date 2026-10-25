@@ -38,14 +38,17 @@ What's actually implemented vs. what's left. For how the implemented part works,
   - `FeelMotion.Value`: no-target actions that broadcast a tweened value via `UnityEvent<T>`
     (Float/Double/Int/Long/Vector2/Vector3/Vector4/Color/String) — mirrors LitMotion.Animation's
     `ValueAnimationComponent` family.
-  - A full worked example of these in combination: `Scenes/ExampleCatRunner.unity` +
-    `Scenes/Demo/CatRunner.cs` (`FeelMotion.Samples.asmdef`) — a FeelMotion rebuild of Feel's FeelDuck
-    demo, built entirely in code (no SerializeReference authoring) via `FeelMotionPlayer.SetActions`.
+  - A full worked example of these in combination: the `AaaahFlyingCat` demo under
+    `Samples~/Examples/Scripts/CatRunner/` (`FeelMotion.Samples.asmdef`) — a FeelMotion rebuild of
+    Feel's FeelDuck demo, built entirely in code (no SerializeReference authoring) via
+    `FeelMotionPlayer.SetActions`. Shipped as a UPM sample (`package.json`'s `samples` array), not
+    compiled as part of the package — imported on demand via Package Manager ▸ FeelMotion ▸ Samples.
 - **Assembly split**: `FeelMotion` (Core/Player/Transform/Control/Particles) + `FeelMotion.UI` +
   `FeelMotion.Camera` + `FeelMotion.Rendering` + `FeelMotion.Audio` + `FeelMotion.Physics` +
   `FeelMotion.Physics2D` + `FeelMotion.TextMeshPro` + `FeelMotion.Value` (each an optional, dependency-
   isolated action category — see ExtensionGuide.md §3) + `FeelMotion.Editor` + `FeelMotion.Tests` +
-  `FeelMotion.Samples` (demo-only, not part of the library proper).
+  the `Samples~/Examples` sample assemblies (demo-only, not part of the library proper, not compiled
+  unless imported into a consuming project).
 - **Inspector**: UIElements editor (`CreateInspectorGUI`) — searchable Add Action dropdown
   (`TypeCache`-driven, works across assemblies with zero wiring), reorderable list, enable/disable/
   rename/remove/move/duplicate, per-action preview with a live progress bar that also tracks each

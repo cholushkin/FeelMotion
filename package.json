@@ -19,5 +19,12 @@
   },
   "documentationUrl": "https://github.com/cholushkin/FeelMotion/blob/main/README.md",
   "changelogUrl": "https://github.com/cholushkin/FeelMotion/blob/main/CHANGELOG.md",
-  "licensesUrl": "https://github.com/cholushkin/FeelMotion/blob/main/LICENSE"
+  "licensesUrl": "https://github.com/cholushkin/FeelMotion/blob/main/LICENSE",
+  "samples": [
+    {
+      "displayName": "Examples",
+      "description": "CatFlyer (AaaahFlyingCat) demo — inspector-authored, code-authored, and plain variants — plus a Callbacks demo. Includes scenes, prefabs, demo scripts and art.",
+      "path": "Samples~/Examples"
+    }
+  ]
 }

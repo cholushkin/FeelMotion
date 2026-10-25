@@ -234,13 +234,19 @@ Assets/Libs/FeelMotion/
 │       references: FeelMotion, LitMotion, UniTask (Editor-only)
 ├── Tests/
 │   └── FeelMotion.Tests.asmdef        — edit-mode NUnit, references FeelMotion (not FeelMotion.UI)
-├── Scenes/
-│   ├── ExampleCatRunner.unity         — FeelMotion rebuild of Feel's FeelDuck demo
-│   └── Demo/
-│       └── FeelMotion.Samples.asmdef  — CatRunner.cs (demo-only, not part of the library proper)
-│           references: FeelMotion, FeelMotion.Audio, FeelMotion.Rendering, LitMotion,
-│                        Unity.InputSystem, Unity.RenderPipelines.Core.Runtime
-└── Documentation/
+├── Samples~/                          — hidden from Unity (trailing `~`); registered in
+│   └── Examples/                        package.json's "samples" array, pulled into a consumer's own
+│       ├── Scenes/, Prefabs/,           Assets/ only via Package Manager ▸ FeelMotion ▸ Samples ▸
+│       │   Animations/, Materials/,     Import. Never compiled/imported as part of the package itself.
+│       │   Music/, Shaders/, Textures/
+│       └── Scripts/
+│           ├── CatRunner/             — FeelMotion.Samples.asmdef — AaaahFlyingCat demo (FeelMotion
+│           │                             rebuild of Feel's FeelDuck demo)
+│           │   references: FeelMotion, FeelMotion.Audio, FeelMotion.Rendering, LitMotion,
+│           │                Unity.InputSystem, Unity.RenderPipelines.Core.Runtime, Unity.TextMeshPro,
+│           │                UnityEngine.UI
+│           └── Callbacks/             — FeelMotion.Examples.Callbacks.asmdef — Callbacks demo
+└── Documentation~/
 ```
 
 `FeelMotion.UI` (and every other non-core category above) exists so a project that never uses that
