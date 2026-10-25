@@ -20,6 +20,7 @@ namespace FeelMotion.Samples
         [SerializeField, Min(0f)] private float _moveSpeed = 1.5f;
         [SerializeField, Min(0f)] private float _consumeDistance = 0.5f;
         [SerializeField, Min(0f)] private float _despawnMarginX = 2f;
+        [SerializeField] private FeelMotionPlayer _consumeMotionPlayer;
 
         EntityType _type;
         Transform _catTransform;

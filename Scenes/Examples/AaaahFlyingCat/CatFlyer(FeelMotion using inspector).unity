@@ -256,123 +256,6 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 38602125}
   m_CullTransparentMesh: 1
---- !u!1 &128346298
-GameObject:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  serializedVersion: 6
-  m_Component:
-  - component: {fileID: 128346300}
-  - component: {fileID: 128346299}
-  m_Layer: 0
-  m_Name: GameObject
-  m_TagString: Untagged
-  m_Icon: {fileID: 0}
-  m_NavMeshLayer: 0
-  m_StaticEditorFlags: 0
-  m_IsActive: 1
---- !u!114 &128346299
-MonoBehaviour:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128346298}
-  m_Enabled: 1
-  m_EditorHideFlags: 0
-  m_Script: {fileID: 11500000, guid: b978fcc348bfac84cbc8297da399d1b5, type: 3}
-  m_Name: 
-  m_EditorClassIdentifier: FeelMotion::FeelMotion.FeelMotionPlayer
-  _label: 
-  _playbackMode: 1
-  _autoPlay: 0
-  _sequenceDelay: 0
-  _stopOnDisable: 1
-  _restoreOnDisable: 0
-  _durationMultiplier: 1
-  _intensityMultiplier: 1
-  _actions:
-  - rid: 1365089327742451795
-  _onPlay:
-    m_PersistentCalls:
-      m_Calls: []
-  _onComplete:
-    m_PersistentCalls:
-      m_Calls: []
-  _onStop:
-    m_PersistentCalls:
-      m_Calls: []
-  references:
-    version: 2
-    RefIds:
-    - rid: 1365089327742451795
-      type: {class: TransformPositionAction, ns: FeelMotion, asm: FeelMotion}
-      data:
-        _displayName: rnd transform
-        _enabled: 1
-        _actionSettings:
-          _startDelay: 0
-          _timescaleMode: 0
-        _randomizers: []
-        _target: {fileID: 128346300}
-        _valueMode: 0
-        _combineMode: 0
-        _settings:
-          startValue: {x: 0, y: 0, z: 0}
-          endValue: {x: 1, y: 1, z: 1}
-          duration: 1
-          ease: 0
-          customEaseCurve:
-            serializedVersion: 2
-            m_Curve:
-            - serializedVersion: 3
-              time: 0
-              value: 0
-              inSlope: 0
-              outSlope: 1
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            - serializedVersion: 3
-              time: 1
-              value: 1
-              inSlope: 1
-              outSlope: 0
-              tangentMode: 0
-              weightedMode: 0
-              inWeight: 0
-              outWeight: 0
-            m_PreInfinity: 2
-            m_PostInfinity: 2
-            m_RotationOrder: 4
-          delay: 0
-          delayType: 0
-          loops: 10
-          loopType: 0
-          cancelOnError: 0
-          skipValuesDuringDelay: 0
-          immediateBind: 0
-          schedulerType: 0
-          additionalSettings: 0
-        _useWorldSpace: 0
---- !u!4 &128346300
-Transform:
-  m_ObjectHideFlags: 0
-  m_CorrespondingSourceObject: {fileID: 0}
-  m_PrefabInstance: {fileID: 0}
-  m_PrefabAsset: {fileID: 0}
-  m_GameObject: {fileID: 128346298}
-  serializedVersion: 2
-  m_LocalRotation: {x: 0, y: 0, z: 0, w: 1}
-  m_LocalPosition: {x: -0.36524, y: -0.10036, z: 0.375}
-  m_LocalScale: {x: 1, y: 1, z: 1}
-  m_ConstrainProportionsScale: 0
-  m_Children: []
-  m_Father: {fileID: 0}
-  m_LocalEulerAnglesHint: {x: 0, y: 0, z: 0}
 --- !u!114 &162251333
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -4004,7 +3887,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: a69af18f27d8efe4cb2fe5d2d55fc779, type: 3}
   m_Name: 
   m_EditorClassIdentifier: FeelMotion.Samples::FeelMotion.Samples.EntitiesSpawner
-  _spawnerRadius: 1
+  _spawnerRadius: 0.5
   _entityEnemyFishPrefab: {fileID: 5109700628748362404, guid: 9e27db68f57b88544a08d566100f5d7d, type: 3}
   _entityDeadEnemyFishPrefab: {fileID: 4381675782730855215, guid: 77f37c405b425c44f80f78b922c9b3eb, type: 3}
   _entityCoinPrefab: {fileID: 1116546644081392819, guid: 4c791abf29e92734792c477ecd255005, type: 3}
@@ -4153,7 +4036,7 @@ Transform:
   m_GameObject: {fileID: 1720066184}
   serializedVersion: 2
   m_LocalRotation: {x: 0, y: 0, z: 0.004370588, w: -0.99999046}
-  m_LocalPosition: {x: -0.48, y: 0, z: 0}
+  m_LocalPosition: {x: -0.6, y: 0.001, z: 0}
   m_LocalScale: {x: 0.19, y: 0.19, z: 0.19}
   m_ConstrainProportionsScale: 1
   m_Children:
@@ -10329,4 +10212,3 @@ SceneRoots:
   - {fileID: 1885308221}
   - {fileID: 772931069}
   - {fileID: 607968216}
-  - {fileID: 128346300}
