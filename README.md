@@ -33,17 +33,22 @@ Completely **free and open-source**! Bring your game to life with buttery-smooth
 
 ## 📦 Installation
 
-Via the Unity Package Manager, using a git URL:
+### Requirements
+
+FeelMotion requires the following packages to be installed manually:
+
+- [LitMotion](https://github.com/annulusgames/LitMotion)
+- [UniTask](https://github.com/Cysharp/UniTask)
+
+### Install FeelMotion
+
+In Unity, open **Window ▸ Package Manager ▸ + ▸ Install package from git URL…** and enter:
 
 ```
 https://github.com/cholushkin/FeelMotion.git
 ```
 
-**Window ▸ Package Manager ▸ + ▸ Install package from git URL…**, paste the URL above. FeelMotion
-depends on [LitMotion](https://github.com/annulusgames/LitMotion) and
-[UniTask](https://github.com/Cysharp/UniTask) — install those first if the project doesn't already
-have them.
-
+FeelMotion is ready to use once all dependencies are installed.
 ---
 
 ## 🚀 Quick Start

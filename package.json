@@ -12,10 +12,6 @@
     "litmotion",
     "inspector"
   ],
-  "dependencies": {
-    "com.annulusgames.lit-motion": "2.0.2",
-    "com.cysharp.unitask": "2.5.10"
-  },
   "author": {
     "name": "Maxim Cholushkin",
     "email": "cholushkin@gmail.com",
