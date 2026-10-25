@@ -57,6 +57,20 @@ select **FeelMotion**, open the **Samples** tab, and click **Import** next to **
 copies the demo into `Assets/Samples/FeelMotion/<version>/Examples` in your own project, where you
 can freely edit it.
 
+
+### Installation via Git Submodule
+
+Alternatively, add FeelMotion as a Git submodule to your Unity project's `Assets/Game/Plugins`(or `Libs`) folder:
+
+```bash
+git submodule add https://github.com/cholushkin/FeelMotion.git Assets/Game/Plugins/FeelMotion
+```
+
+To initialize submodules after cloning the project:
+
+```bash
+git submodule update --init --recursive
+```
 ---
 
 ## 🚀 Quick Start
