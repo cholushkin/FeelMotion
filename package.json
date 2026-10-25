@@ -17,6 +17,9 @@
     "email": "cholushkin@gmail.com",
     "url": "https://sites.google.com/view/cholushkinmaximcard/home"
   },
+  "dependencies": {
+  "com.qcat.fonts-pack-a": "1.0.0"
+  },
   "documentationUrl": "https://github.com/cholushkin/FeelMotion/blob/main/README.md",
   "changelogUrl": "https://github.com/cholushkin/FeelMotion/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/cholushkin/FeelMotion/blob/main/LICENSE",
