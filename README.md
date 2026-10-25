@@ -50,12 +50,13 @@ https://github.com/cholushkin/FeelMotion.git
 
 FeelMotion is ready to use once all dependencies are installed.
 
-### Import the Examples
+### Examples
 
-The demo scenes/prefabs/scripts aren't installed automatically. In **Window ▸ Package Manager**,
-select **FeelMotion**, open the **Samples** tab, and click **Import** next to **Examples**. This
-copies the demo into `Assets/Samples/FeelMotion/<version>/Examples` in your own project, where you
-can freely edit it.
+The demo scenes/prefabs/scripts live under `Examples` in the package, so they're right there
+in the Project window — including when FeelMotion is added as a git submodule. If you'd rather have
+your own editable copy instead of editing inside the package, open **Window ▸ Package Manager**,
+select **FeelMotion**, open the **Samples** tab, and click **Import** next to **Examples** — this
+copies the demo into `Assets/Samples/FeelMotion/<version>/Examples`.
 
 
 ### Installation via Git Submodule

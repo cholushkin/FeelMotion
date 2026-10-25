@@ -27,7 +27,7 @@
     {
       "displayName": "Examples",
       "description": "CatFlyer (AaaahFlyingCat) demo — inspector-authored, code-authored, and plain variants — plus a Callbacks demo. Includes scenes, prefabs, demo scripts and art.",
-      "path": "Samples~/Examples"
+      "path": "Examples"
     }
   ]
 }

@@ -39,16 +39,19 @@ What's actually implemented vs. what's left. For how the implemented part works,
     (Float/Double/Int/Long/Vector2/Vector3/Vector4/Color/String) — mirrors LitMotion.Animation's
     `ValueAnimationComponent` family.
   - A full worked example of these in combination: the `AaaahFlyingCat` demo under
-    `Samples~/Examples/Scripts/CatRunner/` (`FeelMotion.Samples.asmdef`) — a FeelMotion rebuild of
+    `Examples/Scripts/CatRunner/` (`FeelMotion.Samples.asmdef`) — a FeelMotion rebuild of
     Feel's FeelDuck demo, built entirely in code (no SerializeReference authoring) via
-    `FeelMotionPlayer.SetActions`. Shipped as a UPM sample (`package.json`'s `samples` array), not
-    compiled as part of the package — imported on demand via Package Manager ▸ FeelMotion ▸ Samples.
+    `FeelMotionPlayer.SetActions`. Lives in a visible (non-`~`) `Examples/` folder at the package root
+    so it's reachable whether the package is installed via UPM or dropped straight into `Assets/` as a
+    submodule; also registered in `package.json`'s `samples` array so Package Manager ▸ FeelMotion ▸
+    Samples ▸ Import still offers an editable copy.
 - **Assembly split**: `FeelMotion` (Core/Player/Transform/Control/Particles) + `FeelMotion.UI` +
   `FeelMotion.Camera` + `FeelMotion.Rendering` + `FeelMotion.Audio` + `FeelMotion.Physics` +
   `FeelMotion.Physics2D` + `FeelMotion.TextMeshPro` + `FeelMotion.Value` (each an optional, dependency-
   isolated action category — see ExtensionGuide.md §3) + `FeelMotion.Editor` + `FeelMotion.Tests` +
-  the `Samples~/Examples` sample assemblies (demo-only, not part of the library proper, not compiled
-  unless imported into a consuming project).
+  the `Examples` sample assemblies (demo-only, not part of the library proper, but — unlike a
+  hidden `Samples~/` — compiled as part of the package under every install method; see
+  Architecture.md §9's trade-off note).
 - **Inspector**: UIElements editor (`CreateInspectorGUI`) — searchable Add Action dropdown
   (`TypeCache`-driven, works across assemblies with zero wiring), reorderable list, enable/disable/
   rename/remove/move/duplicate, per-action preview with a live progress bar that also tracks each

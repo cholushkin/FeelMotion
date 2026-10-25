@@ -234,20 +234,27 @@ Assets/Libs/FeelMotion/
 │       references: FeelMotion, LitMotion, UniTask (Editor-only)
 ├── Tests/
 │   └── FeelMotion.Tests.asmdef        — edit-mode NUnit, references FeelMotion (not FeelMotion.UI)
-├── Samples~/                          — hidden from Unity (trailing `~`); registered in
-│   └── Examples/                        package.json's "samples" array, pulled into a consumer's own
-│       ├── Scenes/, Prefabs/,           Assets/ only via Package Manager ▸ FeelMotion ▸ Samples ▸
-│       │   Animations/, Materials/,     Import. Never compiled/imported as part of the package itself.
-│       │   Music/, Shaders/, Textures/
-│       └── Scripts/
-│           ├── CatRunner/             — FeelMotion.Samples.asmdef — AaaahFlyingCat demo (FeelMotion
-│           │                             rebuild of Feel's FeelDuck demo)
-│           │   references: FeelMotion, FeelMotion.Audio, FeelMotion.Rendering, LitMotion,
-│           │                Unity.InputSystem, Unity.RenderPipelines.Core.Runtime, Unity.TextMeshPro,
-│           │                UnityEngine.UI
-│           └── Callbacks/             — FeelMotion.Examples.Callbacks.asmdef — Callbacks demo
+├── Examples/                           — ordinary (visible, not hidden) package folder, so content is
+│   ├── Scenes/, Prefabs/,                reachable directly under Packages/<pkg>/Examples whether the
+│   │   Animations/, Materials/,          package is a UPM dependency or a git submodule dropped
+│   │   Music/, Shaders/, Textures/       straight into Assets/. Also registered in package.json's
+│   └── Scripts/                          "samples" array (path: "Examples"), so Package Manager ▸
+│       ├── CatRunner/                 — FeelMotion ▸ Samples ▸ Import still offers an editable copy.
+│       │                                 FeelMotion.Samples.asmdef — AaaahFlyingCat demo (FeelMotion
+│       │                                 rebuild of Feel's FeelDuck demo)
+│       │   references: FeelMotion, FeelMotion.Audio, FeelMotion.Rendering, LitMotion,
+│       │                Unity.InputSystem, Unity.RenderPipelines.Core.Runtime, Unity.TextMeshPro,
+│       │                UnityEngine.UI
+│       └── Callbacks/                 — FeelMotion.Examples.Callbacks.asmdef — Callbacks demo
 └── Documentation~/
 ```
+
+**Trade-off**: because `Examples/` has no trailing `~`, it's compiled/imported as part of the package
+itself under every install method (UPM git/registry/embedded, or a plain submodule in `Assets/`) — not
+opt-in. A consumer who installs FeelMotion but doesn't have `Unity.InputSystem`/render-pipelines-core/
+`Unity.TextMeshPro`/`UnityEngine.UI` will see the `FeelMotion.Samples` assembly fail to compile. This
+was accepted deliberately so the examples are visible and editable with zero extra steps for the
+submodule case; revisit with a hidden `Samples~/` (see git history) if forced-compile becomes a problem.
 
 `FeelMotion.UI` (and every other non-core category above) exists so a project that never uses that
 category's actions doesn't need its dependency compiled in alongside Core/Transform/Control — see
