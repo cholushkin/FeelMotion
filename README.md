@@ -52,7 +52,7 @@ FeelMotion is ready to use once all dependencies are installed.
 
 ### Examples
 
-The demo scenes/prefabs/scripts live under `Samples/Examples` in the package, so they're right there
+The demo scenes/prefabs/scripts live under `Examples` in the package, so they're right there
 in the Project window — including when FeelMotion is added as a git submodule. If you'd rather have
 your own editable copy instead of editing inside the package, open **Window ▸ Package Manager**,
 select **FeelMotion**, open the **Samples** tab, and click **Import** next to **Examples** — this
