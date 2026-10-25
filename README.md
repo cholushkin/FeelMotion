@@ -49,6 +49,7 @@ https://github.com/cholushkin/FeelMotion.git
 ```
 
 FeelMotion is ready to use once all dependencies are installed.
+
 ---
 
 ## 🚀 Quick Start
