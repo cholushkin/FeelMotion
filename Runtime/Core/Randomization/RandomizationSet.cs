@@ -123,7 +123,9 @@ namespace FeelMotion
             {
                 if (i >= ranges.Count || !ranges[i].Enabled) continue;
                 var range = ranges[i];
-                sample[i] = module.Distribution.Sample(range.Min, range.Max, ref state.Rng);
+                sample[i] = range.Source == RandomizationValueSource.List && range.Values is { Count: > 0 }
+                    ? range.Values[state.Rng.NextInt(range.Values.Count)]
+                    : module.Distribution.Sample(range.Min, range.Max, ref state.Rng);
             }
 
             if (module.Policy == RandomizationSamplingPolicy.OncePerPlay) state.CachedSample = sample;

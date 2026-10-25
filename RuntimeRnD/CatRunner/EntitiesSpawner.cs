@@ -3,16 +3,23 @@ using UnityEngine;
 namespace FeelMotion.Samples
 {
     /// Auto-spawns entities at their own rate; the HUD's buttons can force an extra spawn of a specific
-    /// type. Spawn position is randomized within _spawnerRadius so entities don't all enter on the
+    /// kind. Spawn position is randomized within _spawnerRadius so entities don't all enter on the
     /// same line.
     public sealed class EntitiesSpawner : MonoBehaviour
     {
+        enum SpawnKind
+        {
+            Coin,
+            Fish,
+            Heart,
+            EnemyFish,
+        }
+
         [SerializeField] private float _spawnerRadius = 1f;
-        [SerializeField] private Entity _entityEnemyFishPrefab;
-        [SerializeField] private Entity _entityDeadEnemyFishPrefab;
-        [SerializeField] private Entity _entityCoinPrefab;
-        [SerializeField] private Entity _entityFishPrefab;
-        [SerializeField] private Entity _entityHeartPrefab;
+        [SerializeField] private EnemyEntity _entityEnemyFishPrefab;
+        [SerializeField] private PickableEntity _entityCoinPrefab;
+        [SerializeField] private PickableEntity _entityFishPrefab;
+        [SerializeField] private PickableEntity _entityHeartPrefab;
 
         [SerializeField] private Transform _catTransform;
 
@@ -26,63 +33,52 @@ namespace FeelMotion.Samples
         float _heartTimer;
         float _enemyFishTimer;
 
-        Sprite _deadEnemyFishSprite;
         bool _isSpawningEnabled = true;
-
-        void Awake()
-        {
-            // EnemyDeadFish is never spawned on its own — Entity just borrows its sprite on hit.
-            if (_entityDeadEnemyFishPrefab != null)
-            {
-                var deadSpriteRenderer = _entityDeadEnemyFishPrefab.GetComponent<SpriteRenderer>();
-                if (deadSpriteRenderer != null) _deadEnemyFishSprite = deadSpriteRenderer.sprite;
-            }
-        }
 
         void Update()
         {
             if (!_isSpawningEnabled) return;
 
-            Tick(ref _coinTimer, _coinSpawnInterval, EntityType.Coin);
-            Tick(ref _fishTimer, _fishSpawnInterval, EntityType.Fish);
-            Tick(ref _heartTimer, _heartSpawnInterval, EntityType.Heart);
-            Tick(ref _enemyFishTimer, _enemyFishSpawnInterval, EntityType.EnemyFish);
+            Tick(ref _coinTimer, _coinSpawnInterval, SpawnKind.Coin);
+            Tick(ref _fishTimer, _fishSpawnInterval, SpawnKind.Fish);
+            Tick(ref _heartTimer, _heartSpawnInterval, SpawnKind.Heart);
+            Tick(ref _enemyFishTimer, _enemyFishSpawnInterval, SpawnKind.EnemyFish);
         }
 
-        void Tick(ref float timer, float interval, EntityType type)
+        void Tick(ref float timer, float interval, SpawnKind kind)
         {
             timer += Time.deltaTime;
             if (timer < interval) return;
 
             timer = 0f;
-            SpawnEntity(type);
+            SpawnEntity(kind);
         }
 
         /// Called by the HUD once lives run out — forced spawns from the buttons still work.
         public void StopSpawning() => _isSpawningEnabled = false;
 
-        public void ForceSpawnCoin() => SpawnEntity(EntityType.Coin);
-        public void ForceSpawnFish() => SpawnEntity(EntityType.Fish);
-        public void ForceSpawnHeart() => SpawnEntity(EntityType.Heart);
+        public void ForceSpawnCoin() => SpawnEntity(SpawnKind.Coin);
+        public void ForceSpawnFish() => SpawnEntity(SpawnKind.Fish);
+        public void ForceSpawnHeart() => SpawnEntity(SpawnKind.Heart);
 
-        void SpawnEntity(EntityType type)
+        void SpawnEntity(SpawnKind kind)
         {
-            var prefab = PrefabFor(type);
+            var prefab = PrefabFor(kind);
             if (prefab == null) return;
 
             var spawnPosition = transform.position + (Vector3)(Random.insideUnitCircle * _spawnerRadius);
             var entity = Instantiate(prefab, spawnPosition, prefab.transform.rotation, transform.parent);
-            entity.Initialize(type, _catTransform, _deadEnemyFishSprite);
+            entity.Initialize(_catTransform);
         }
 
-        Entity PrefabFor(EntityType type)
+        Entity PrefabFor(SpawnKind kind)
         {
-            switch (type)
+            switch (kind)
             {
-                case EntityType.Coin: return _entityCoinPrefab;
-                case EntityType.Fish: return _entityFishPrefab;
-                case EntityType.Heart: return _entityHeartPrefab;
-                case EntityType.EnemyFish: return _entityEnemyFishPrefab;
+                case SpawnKind.Coin: return _entityCoinPrefab;
+                case SpawnKind.Fish: return _entityFishPrefab;
+                case SpawnKind.Heart: return _entityHeartPrefab;
+                case SpawnKind.EnemyFish: return _entityEnemyFishPrefab;
                 default: return null;
             }
         }

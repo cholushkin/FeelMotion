@@ -16,7 +16,7 @@ namespace FeelMotion.Samples
     /// Three players are built once in Awake() and replayed on every trigger — Rewind() before Play()
     /// forces a clean restart even mid-play.
     [RequireComponent(typeof(Animator), typeof(AudioSource))]
-    public sealed class CatRunner : MonoBehaviour
+    public sealed class CatFlyer : MonoBehaviour
     {
         static readonly int JumpTriggerHash = Animator.StringToHash("Jump");
 

@@ -17,6 +17,10 @@ namespace FeelMotion
             ? $"Material property '{_propertyName}' not found on material '{Target.name}'."
             : null;
 
+        // Target is a shared Material asset, not a scene instance — never leave it mutated after
+        // playback/preview ends (otherwise the asset keeps the tweened value in the Project forever).
+        protected override bool AlwaysRestoreOnStop => true;
+
         protected override Vector4 GetValue(Material target) => target.GetVector(_propertyName);
 
         protected override void SetValue(Material target, in Vector4 value) => target.SetVector(_propertyName, value);

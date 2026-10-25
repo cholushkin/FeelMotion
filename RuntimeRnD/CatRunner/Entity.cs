@@ -1,44 +1,33 @@
-using System.Collections.Generic;
 using FeelMotion;
-using LitMotion;
 using UnityEngine;
 
 namespace FeelMotion.Samples
 {
-    public enum EntityType
-    {
-        Coin,
-        Fish,
-        Heart,
-        EnemyFish,
-    }
-
-    /// Moves left towards the cat, consumed once close enough. EnemyFish is the exception: on consume
-    /// it swaps to the dead-fish sprite and punches away instead of being destroyed immediately.
-    public sealed class Entity : MonoBehaviour
+    /// Moves left towards the cat, consumed once close enough. Subclasses implement their own
+    /// reward/penalty in OnConsume() (score, life, sprite swap, ...); the shared consume-motion
+    /// playback lives here so every entity behaves the same once consumed.
+    public abstract class Entity : MonoBehaviour
     {
         [SerializeField, Min(0f)] private float _moveSpeed = 1.5f;
         [SerializeField, Min(0f)] private float _consumeDistance = 0.5f;
         [SerializeField, Min(0f)] private float _despawnMarginX = 2f;
         [SerializeField] private FeelMotionPlayer _consumeMotionPlayer;
 
-        EntityType _type;
         Transform _catTransform;
-        Sprite _deadFishSprite;
         SpriteRenderer _spriteRenderer;
         bool _isConsumed;
 
-        void Awake()
+        protected SpriteRenderer SpriteRenderer => _spriteRenderer;
+
+        protected virtual void Awake()
         {
             _spriteRenderer = GetComponent<SpriteRenderer>();
         }
 
-        /// Called by EntitiesSpawner right after Instantiate — the spawner owns the prefab-to-type map.
-        public void Initialize(EntityType type, Transform catTransform, Sprite deadFishSprite = null)
+        /// Called by EntitiesSpawner right after Instantiate.
+        public virtual void Initialize(Transform catTransform)
         {
-            _type = type;
             _catTransform = catTransform;
-            _deadFishSprite = deadFishSprite;
         }
 
         void Update()
@@ -59,53 +48,34 @@ namespace FeelMotion.Samples
 
         void Consume()
         {
+            if (_isConsumed) return;
             _isConsumed = true;
 
-            switch (_type)
+            OnConsume();
+        }
+
+        /// Entity-specific consume behavior (score/life changes, sprite swap, ...). Overrides must
+        /// call base.OnConsume() last — it plays _consumeMotionPlayer (if assigned) and destroys the
+        /// entity once playback completes, or destroys immediately when no consume player is set.
+        protected virtual void OnConsume()
+        {
+            // todo: spawn a particle effect at transform.position once reward/death VFX are authored.
+
+            if (_consumeMotionPlayer != null)
             {
-                case EntityType.Coin:
-                    GameHud.Instance?.AddCoin();
-                    Destroy(gameObject);
-                    break;
-
-                case EntityType.Fish:
-                    GameHud.Instance?.AddFish();
-                    Destroy(gameObject);
-                    break;
-
-                case EntityType.Heart:
-                    GameHud.Instance?.AddHeart();
-                    Destroy(gameObject);
-                    break;
-
-                case EntityType.EnemyFish:
-                    GameHud.Instance?.LoseLife();
-                    TurnIntoDeadFish();
-                    break;
+                _consumeMotionPlayer.Completed += HandleConsumeMotionCompleted;
+                _consumeMotionPlayer.Play();
+            }
+            else
+            {
+                Destroy(gameObject);
             }
         }
 
-        void TurnIntoDeadFish()
+        void HandleConsumeMotionCompleted()
         {
-            if (_spriteRenderer != null && _deadFishSprite != null) _spriteRenderer.sprite = _deadFishSprite;
-
-            // "Flies back with air" — reuse the same punch action CatRunner's own juice already uses,
-            // just with a bigger, backward-and-up offset instead of a tiny camera/landing kick.
-            var player = gameObject.AddComponent<FeelMotionPlayer>();
-            player.SetActions(new List<FeelMotionAction>
-            {
-                new TransformPositionPunchAction().Configure(
-                    transform, MotionValueMode.FromCurrentTo,
-                    new SerializableMotionSettings<Vector3, PunchOptions>
-                    {
-                        EndValue = new Vector3(0.6f, 0.4f, 0f),
-                        Duration = 0.6f,
-                        Options = new PunchOptions { Frequency = 6, DampingRatio = 0.4f },
-                    }),
-            });
-            player.Play();
-
-            Destroy(gameObject, 1f);
+            _consumeMotionPlayer.Completed -= HandleConsumeMotionCompleted;
+            Destroy(gameObject);
         }
     }
 }

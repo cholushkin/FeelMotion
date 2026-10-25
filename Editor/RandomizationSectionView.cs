@@ -147,16 +147,37 @@ static class RandomizationSectionView
     static VisualElement BuildComponentRow(SerializedProperty componentsProperty, int index, string label)
     {
         var element = componentsProperty.GetArrayElementAtIndex(index);
-        var row = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center, marginLeft = 12f } };
+        var sourceProperty = element.FindPropertyRelative("Source");
 
-        var enabledField = new PropertyField(element.FindPropertyRelative("Enabled"), label) { style = { width = 110f } };
-        row.Add(enabledField);
-        row.Add(new Label("Min") { style = { marginLeft = 4f, marginRight = 2f, unityTextAlign = TextAnchor.MiddleRight } });
-        row.Add(new PropertyField(element.FindPropertyRelative("Min"), "") { style = { flexGrow = 1f } });
-        row.Add(new Label("Max") { style = { marginLeft = 4f, marginRight = 2f, unityTextAlign = TextAnchor.MiddleRight } });
-        row.Add(new PropertyField(element.FindPropertyRelative("Max"), "") { style = { flexGrow = 1f } });
+        var container = new VisualElement { style = { marginLeft = 12f, marginBottom = 2f } };
 
-        return row;
+        var headerRow = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
+        headerRow.Add(new PropertyField(element.FindPropertyRelative("Enabled"), label) { style = { width = 110f } });
+        headerRow.Add(new PropertyField(sourceProperty, "") { style = { flexGrow = 1f } });
+        container.Add(headerRow);
+
+        var rangeRow = new VisualElement { style = { flexDirection = FlexDirection.Row, alignItems = Align.Center } };
+        rangeRow.Add(new Label("Min") { style = { marginLeft = 4f, marginRight = 2f, unityTextAlign = TextAnchor.MiddleRight } });
+        rangeRow.Add(new PropertyField(element.FindPropertyRelative("Min"), "") { style = { flexGrow = 1f } });
+        rangeRow.Add(new Label("Max") { style = { marginLeft = 4f, marginRight = 2f, unityTextAlign = TextAnchor.MiddleRight } });
+        rangeRow.Add(new PropertyField(element.FindPropertyRelative("Max"), "") { style = { flexGrow = 1f } });
+        container.Add(rangeRow);
+
+        // List mode: pick uniformly at random from this authored set instead of sampling [Min, Max].
+        var valuesField = new PropertyField(element.FindPropertyRelative("Values"), "Values") { style = { marginLeft = 4f } };
+        container.Add(valuesField);
+
+        void RefreshSourceVisibility()
+        {
+            var isList = (RandomizationValueSource)sourceProperty.enumValueIndex == RandomizationValueSource.List;
+            rangeRow.style.display = isList ? DisplayStyle.None : DisplayStyle.Flex;
+            valuesField.style.display = isList ? DisplayStyle.Flex : DisplayStyle.None;
+        }
+
+        RefreshSourceVisibility();
+        container.TrackPropertyValue(sourceProperty, _ => RefreshSourceVisibility());
+
+        return container;
     }
 
     /// Duration/Delay are one plain scalar; Start/End Value are shaped by the action's TValue. Empty

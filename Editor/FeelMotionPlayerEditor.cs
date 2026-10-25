@@ -419,10 +419,49 @@ public sealed class FeelMotionPlayerEditor : UnityEditor.Editor
         serializedObject.Update();
         var index = _actionsProperty.arraySize;
         _actionsProperty.InsertArrayElementAtIndex(index);
-        _actionsProperty.GetArrayElementAtIndex(index).managedReferenceValue = Activator.CreateInstance(type);
+        var elementProperty = _actionsProperty.GetArrayElementAtIndex(index);
+        elementProperty.managedReferenceValue = Activator.CreateInstance(type);
+        ApplyNewActionDefaults(elementProperty, type);
         serializedObject.ApplyModifiedProperties();
         _prevArraySize = _actionsProperty.arraySize;
         RebuildActionsPanel();
+    }
+
+    /// Gives a freshly-added action a usable starting point instead of a blank label and a
+    /// zero-duration, linearly-eased tween with no target — what a designer would otherwise set by
+    /// hand on every single action added.
+    void ApplyNewActionDefaults(SerializedProperty elementProperty, Type actionType)
+    {
+        var firstWord = ObjectNames.NicifyVariableName(actionType.Name).Split(' ')[0];
+        elementProperty.FindPropertyRelative("_displayName").stringValue = $"Feel this {firstWord.ToLowerInvariant()}!";
+
+        var settingsProperty = elementProperty.FindPropertyRelative("_settings");
+        if (settingsProperty != null)
+        {
+            settingsProperty.FindPropertyRelative("duration").floatValue = 1f;
+            settingsProperty.FindPropertyRelative("ease").enumValueIndex = (int)Ease.InOutQuad;
+        }
+
+        var targetProperty = elementProperty.FindPropertyRelative("_target");
+        if (targetProperty != null && targetProperty.propertyType == SerializedPropertyType.ObjectReference)
+        {
+            var targetObjectType = GetTargetObjectType(actionType);
+            if (targetObjectType != null && typeof(Component).IsAssignableFrom(targetObjectType))
+                targetProperty.objectReferenceValue = ((FeelMotionPlayer)target).gameObject.GetComponent(targetObjectType);
+        }
+    }
+
+    /// Walks up to the closed PropertyMotionAction&lt;TObject,...&gt; generic base to find TObject —
+    /// same technique RandomizationSectionView.GetValueType uses for TValue.
+    static Type GetTargetObjectType(Type actionType)
+    {
+        for (var t = actionType; t != null; t = t.BaseType)
+        {
+            if (!t.IsGenericType) continue;
+            if (t.GetGenericTypeDefinition() == typeof(PropertyMotionAction<,,,>))
+                return t.GetGenericArguments()[0];
+        }
+        return null;
     }
 
     VisualElement CreateEventsPanel()

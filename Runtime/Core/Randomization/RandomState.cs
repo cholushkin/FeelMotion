@@ -38,4 +38,12 @@ public struct RandomState
 
     /// Uniform float in [min, max]. Returns min unchanged when max is not greater than min.
     public float NextFloat(float min, float max) => max <= min ? min : min + (max - min) * NextFloat01();
+
+    /// Uniform index in [0, count). Returns 0 when count <= 0 — picks one of `count` discrete items.
+    public int NextInt(int count)
+    {
+        if (count <= 0) return 0;
+        var index = (int)(NextFloat01() * count);
+        return index >= count ? count - 1 : index;
+    }
 }

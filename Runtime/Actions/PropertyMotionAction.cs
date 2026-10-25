@@ -28,6 +28,12 @@ namespace FeelMotion
 
         public SerializableMotionSettings<TValue, TOptions> Settings => _settings;
 
+        /// When true, every Stop() call restores the captured initial value regardless of
+        /// MotionStopMode — for actions whose Target is a shared asset (e.g. a Material) that must
+        /// never be left mutated once playback/preview ends. Scene-object actions default to false:
+        /// leaving the end value in place on a plain Cancel/Complete is normal and expected for them.
+        protected internal virtual bool AlwaysRestoreOnStop => false;
+
         public override double GetDuration() => _settings == null
             ? ActionSettings.StartDelay
             : ComputeMotionDuration(_settings.Delay, _settings.Duration, ActionSettings.StartDelay);
@@ -251,7 +257,7 @@ namespace FeelMotion
             else
                 _handle.TryComplete();
 
-            if (mode is MotionStopMode.CancelAndRestore or MotionStopMode.CompleteAndRestore)
+            if (mode is MotionStopMode.CancelAndRestore or MotionStopMode.CompleteAndRestore || _action.AlwaysRestoreOnStop)
                 RestoreInitialValues();
 
             if (mode is MotionStopMode.Cancel or MotionStopMode.CancelAndRestore)

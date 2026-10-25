@@ -109,6 +109,14 @@ namespace FeelMotion
         /// action and keeps going — see Documentation/Architecture.md §7.
         public event Action<FeelMotionAction, Exception> ActionError;
 
+        /// Called by the Editor when this component is first added (or via its "Reset" context menu) —
+        /// gives a freshly-added player a sensible starting point instead of a blank label/no autoplay.
+        void Reset()
+        {
+            _label = "Feel this motion!";
+            _autoPlay = MotionAutoPlayMode.OnStart;
+        }
+
         void OnEnable()
         {
             if (_autoPlay == MotionAutoPlayMode.OnEnable) Play();

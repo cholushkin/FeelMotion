@@ -131,6 +131,32 @@ namespace FeelMotion.Tests
         }
 
         [Test]
+        public void List_PicksOneOfTheAuthoredValues_NeverSamplesTheRange()
+        {
+            var action = CreateAction(new Vector3(5f, 7f, 9f));
+            var randomizer = action.AddRandomizer();
+            randomizer.Parameter = RandomizedParameter.EndValue;
+            randomizer.Mode = RandomizationMode.AbsoluteRange;
+
+            var xRange = new ComponentRange(true, 999f, 999f); // must be ignored — Source is List
+            xRange.Source = RandomizationValueSource.List;
+            xRange.Values = new System.Collections.Generic.List<float> { 1f, 2f, 3f };
+            randomizer.Components[0] = xRange;
+            randomizer.Components.Add(new ComponentRange(true, 100f, 100f));
+            randomizer.Components.Add(new ComponentRange(true, -8f, -8f));
+
+            for (var i = 0; i < 20; i++)
+            {
+                var runtime = action.CreateRuntime(MotionPlaybackContext.Default);
+                runtime.Play();
+                runtime.Stop(MotionStopMode.Complete);
+
+                CollectionAssert.Contains(new[] { 1f, 2f, 3f }, _go.transform.localPosition.x,
+                    "List mode must always pick one of the authored Values, never a value sampled from Min/Max.");
+            }
+        }
+
+        [Test]
         public void RandomizationSet_CreateOrNull_IsNullWhenThereAreNoEnabledModules()
         {
             var action = CreateAction(Vector3.one);
