@@ -1,5 +1,5 @@
 {
-  "name": "com.cholushkin.feelmotion",
+  "name": "com.qcat.feelmotion",
   "version": "0.1.0",
   "displayName": "FeelMotion",
   "description": "Inspector-first animation and game-juice library for Unity: LitMotion's performance with a FEEL-like authoring workflow — tween sequences and side effects (transform, UI, camera, material, audio, physics, TextMeshPro...), built entirely in the Inspector.",
@@ -17,9 +17,7 @@
     "email": "cholushkin@gmail.com",
     "url": "https://sites.google.com/view/cholushkinmaximcard/home"
   },
-  "dependencies": {
-  "com.qcat.fonts-pack-a": "1.0.0"
-  },
+  "dependencies": {},
   "documentationUrl": "https://github.com/cholushkin/FeelMotion/blob/main/README.md",
   "changelogUrl": "https://github.com/cholushkin/FeelMotion/blob/main/CHANGELOG.md",
   "licensesUrl": "https://github.com/cholushkin/FeelMotion/blob/main/LICENSE",
@@ -27,7 +25,7 @@
     {
       "displayName": "Examples",
       "description": "CatFlyer (AaaahFlyingCat) demo — inspector-authored, code-authored, and plain variants — plus a Callbacks demo. Includes scenes, prefabs, demo scripts and art.",
-      "path": "Examples"
+      "path": "Samples~/Examples"
     }
   ]
 }

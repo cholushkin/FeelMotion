@@ -4,6 +4,19 @@ All notable changes to this package are documented in this file.
 
 The format is based on [Keep a Changelog](https://keepachangelog.com/en/1.1.0/).
 
+## [Unreleased]
+
+### Changed
+
+- Renamed package id from `com.cholushkin.feelmotion` to `com.qcat.feelmotion`.
+- Moved `Examples/` into `Samples~/Examples` so the demo is no longer imported or compiled
+  by default — it is now opt-in via the Package Manager's Samples tab.
+
+### Removed
+
+- Removed the unused `com.qcat.fonts-pack-a` dependency from `package.json` (it was not
+  referenced by any runtime, editor, or example code).
+
 ## [0.1.0] - 2026-10-17
 
 Initial package release.
