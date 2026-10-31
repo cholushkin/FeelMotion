@@ -53,7 +53,7 @@ namespace FeelMotion.Editor
                 for (var i = 0; i < segments.Length; i++)
                 {
                     var segment = segments[i];
-                    var existing = parent.children.FirstOrDefault(c => c.name == segment);
+                    var existing = parent.childList.FirstOrDefault(c => c.name == segment);
                     if (existing != null)
                     {
                         parent = existing;
