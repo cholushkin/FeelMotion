@@ -40,6 +40,10 @@ FeelMotion requires the following packages to be installed manually:
 - [LitMotion](https://github.com/annulusgames/LitMotion)
 - [UniTask](https://github.com/Cysharp/UniTask)
 
+These are not declared as UPM `dependencies` in `package.json` because neither is distributed through the Unity Registry — install them manually via their own Git URLs before or after installing FeelMotion.
+
+> Note: FeelMotion no longer depends on `com.qcat.fonts-pack-a`. That dependency was unused by any runtime, editor, or example code and has been removed.
+
 ### Install FeelMotion
 
 In Unity, open **Window ▸ Package Manager ▸ + ▸ Install package from git URL…** and enter:
@@ -52,11 +56,10 @@ FeelMotion is ready to use once all dependencies are installed.
 
 ### Examples
 
-The demo scenes/prefabs/scripts live under `Examples` in the package, so they're right there
-in the Project window — including when FeelMotion is added as a git submodule. If you'd rather have
-your own editable copy instead of editing inside the package, open **Window ▸ Package Manager**,
-select **FeelMotion**, open the **Samples** tab, and click **Import** next to **Examples** — this
-copies the demo into `Assets/Samples/FeelMotion/<version>/Examples`.
+The demo scenes/prefabs/scripts live under `Samples~/Examples` in the package. As a `~` folder,
+Unity hides it from the Project window and never imports or compiles it by default. To use it,
+open **Window ▸ Package Manager**, select **FeelMotion**, open the **Samples** tab, and click
+**Import** next to **Examples** — this copies the demo into `Assets/Samples/FeelMotion/<version>/Examples`.
 
 
 ### Installation via Git Submodule
