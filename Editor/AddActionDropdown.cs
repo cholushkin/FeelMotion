@@ -50,20 +50,26 @@ namespace FeelMotion.Editor
                 var segments = menuName.Split('/');
                 var parent = root;
 
-                for (var i = 0; i < segments.Length; i++)
+                // Create category hierarchy.
+                for (var i = 0; i < segments.Length - 1; i++)
                 {
                     var segment = segments[i];
-                    var existing = parent.childList.FirstOrDefault(c => c.name == segment);
-                    if (existing != null)
+
+                    var existing = parent.children
+                        .FirstOrDefault(c => c.name == segment);
+
+                    if (existing == null)
                     {
-                        parent = existing;
-                        continue;
+                        existing = new AdvancedDropdownItem(segment);
+                        parent.AddChild(existing);
                     }
 
-                    var child = new Item(type, segment);
-                    parent.AddChild(child);
-                    parent = child;
+                    parent = existing;
                 }
+
+                // Only the final item represents an action.
+                var actionName = segments[segments.Length - 1];
+                parent.AddChild(new Item(type, actionName));
             }
 
             return root;
