@@ -14,7 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: GameLib::GameLib.GameLibModuleManifest
   Name: FeelMotion
   Version: 1.0.0a
-  Icon: {fileID: 21300000, guid: f374ae8c8695c2f4681822797d48d661, type: 3}
+  Icon: {fileID: 21300000, guid: 5863ed65a2d79364e9191afa28bea59b, type: 3}
   Description: 'Description '
   Tags:
   - animation
